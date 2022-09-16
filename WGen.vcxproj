@@ -75,7 +75,7 @@
     <OutDir>$(SolutionDir)\bin\</OutDir>
     <IntDir>$(SolutionDir)\bin\tmp</IntDir>
     <IncludePath>$(SolutionDir)thirdparty;$(SolutionDir)source;$(SolutionDir)source\runtime;$(IncludePath)</IncludePath>
-    <PublicIncludeDirectories>C:\Learnnotes\CG\WGen\thirdparty;$(PublicIncludeDirectories)</PublicIncludeDirectories>
+    <PublicIncludeDirectories>C:\Learnnotes\CG\WGen\WGen\thirdparty;$(PublicIncludeDirectories)</PublicIncludeDirectories>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -157,6 +157,9 @@
     <ClCompile Include="source\runtime\function\event\events.cpp" />
     <ClCompile Include="source\runtime\function\extern_variables.cpp" />
     <ClCompile Include="source\runtime\function\framework\object\GObject.h" />
+    <ClCompile Include="source\runtime\function\model\render_mseh.cpp" />
+    <ClCompile Include="source\runtime\function\model\triangleMesh.cpp" />
+    <ClCompile Include="source\runtime\function\network\network.cpp" />
     <ClCompile Include="source\runtime\function\render\render.cpp" />
     <ClCompile Include="source\runtime\function\scene\model_importer.cpp" />
     <ClCompile Include="source\runtime\function\ui\font.cpp" />
@@ -191,6 +194,7 @@
     <ClInclude Include="source\runtime\function\animation\animation.h" />
     <ClInclude Include="source\runtime\function\audio\audio.h" />
     <ClInclude Include="source\runtime\function\base\camera.h" />
+    <ClInclude Include="source\runtime\function\controller\controller.h" />
     <ClInclude Include="source\runtime\function\event\events.h" />
     <ClInclude Include="source\runtime\function\event\timor.h" />
     <ClInclude Include="source\runtime\function\framework\component\animation.h" />
@@ -199,6 +203,13 @@
     <ClInclude Include="source\runtime\function\framework\level\level.h" />
     <ClInclude Include="source\runtime\function\framework\object\std_gobjects.h" />
     <ClInclude Include="source\runtime\function\framework\world\world_manager.h" />
+    <ClInclude Include="source\runtime\function\model\3DObject.h" />
+    <ClInclude Include="source\runtime\function\model\actor.h" />
+    <ClInclude Include="source\runtime\function\model\lightSource.h" />
+    <ClInclude Include="source\runtime\function\model\model_include.h" />
+    <ClInclude Include="source\runtime\function\model\render_mesh.h" />
+    <ClInclude Include="source\runtime\function\model\triangleMesh.h" />
+    <ClInclude Include="source\runtime\function\network\network.h" />
     <ClInclude Include="source\runtime\function\render\lightSource.h" />
     <ClInclude Include="source\runtime\function\physics\collision_dectect.h" />
     <ClInclude Include="source\runtime\function\base\color.h" />

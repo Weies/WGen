@@ -3,7 +3,7 @@
 
 int main()
 {
-
+	Actor m;
 	main_win.loop([](){
 		ptr.drawCircle(100, 100, 50);
 

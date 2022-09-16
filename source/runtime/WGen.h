@@ -11,6 +11,7 @@
 #include"function/framework/world/world_manager.h"
 #include"function/framework/component/mesh.h"
 #include"function/render/mrender.h"
+#include"function/model/model_include.h"
 
 Window main_win(800, 600, "Weies's Drawing", true);
 

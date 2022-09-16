@@ -69,6 +69,15 @@
     <ClCompile Include="source\Test\Test.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="source\runtime\function\model\render_mseh.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="source\runtime\function\model\triangleMesh.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="source\runtime\function\network\network.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\runtime\function\base\baseClass.h">
@@ -309,6 +318,30 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="source\runtime\function\scene\model_importer.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="source\runtime\function\model\3DObject.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="source\runtime\function\model\actor.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="source\runtime\function\model\lightSource.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="source\runtime\function\model\model_include.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="source\runtime\function\model\render_mesh.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="source\runtime\function\model\triangleMesh.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="source\runtime\function\controller\controller.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="source\runtime\function\network\network.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
