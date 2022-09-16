@@ -24,6 +24,8 @@ private:
 			tick(deltaTime);
 	}
 };
+template<class T>
+using sptr = shared_ptr<T>;
 
 using Transform = SQT;
 class TransformComponent :public Component {

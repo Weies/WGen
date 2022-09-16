@@ -1,5 +1,9 @@
 #pragma once
+#include"scene_memory.h"
+#include"../base/render_base.h"
+#include"../base/camera.h"
 #include"scene_buffer.h"
+
 
 //场景直接对接渲染
 class Scene {
@@ -23,5 +27,4 @@ public:
 	shared_ptr<Camera> mCamera;
 	RenderModel mAxis;
 };
-
 

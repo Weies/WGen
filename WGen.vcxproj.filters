@@ -311,6 +311,9 @@
     <ClInclude Include="source\runtime\function\scene\model_importer.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="source\runtime\engine.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="source\shader\pbr.shader" />
