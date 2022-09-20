@@ -350,6 +350,9 @@
     <ClInclude Include="source\runtime\Engine.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="source\runtime\platform\path\null.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="source\shader\pbr.shader" />

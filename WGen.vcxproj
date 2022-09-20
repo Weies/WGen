@@ -240,6 +240,7 @@
     <ClInclude Include="source\runtime\function\ui\widget.h" />
     <ClInclude Include="source\runtime\function\ui\window.h" />
     <ClInclude Include="source\runtime\function\utility.h" />
+    <ClInclude Include="source\runtime\platform\path\null.h" />
     <ClInclude Include="source\runtime\resource\asset_manager\asset_manager.h" />
     <ClInclude Include="source\runtime\resource\basis.h" />
     <ClInclude Include="source\runtime\resource\resource_handle.h" />
