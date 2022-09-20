@@ -67,7 +67,7 @@ public:
 	mat4 proj;
 
 	float zNear = 0.5; float zFar = 10000;
-	float fovy = 40.5; float aspect = 1.5;
+	Degree fovy = 40.5; float aspect = 1.5;
 
 	mutable SQT mo;
 	SQT mos;
@@ -106,7 +106,7 @@ public:
 	}
 	float mSpeed = 0.08;//前进速度
 	float mSensity = 0.0015;//鼠标灵敏度
-	float mPitchAngle = 0; float mYawAngle = 0; float mRollAngle = 0;
+	Degree mPitchAngle = 0; Degree mYawAngle = 0; Degree mRollAngle = 0;
 	double mTransStartTime = 0; double mTransEndTime = 0;
 };
 ___global(Camera, ca);

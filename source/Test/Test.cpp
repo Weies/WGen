@@ -1,10 +1,16 @@
-#include"WGen.h"
+#include"Engine.h"
 #include"function/physics/collision_dectect.h"
 
 int main()
 {
-	main_win.loop([](){
-		ptr.drawCircle(100, 100, 50);
+	//SceneManager::get().addMesh()
+
+	main_win.loop([]() {
+
+		ptr3.drawCoordinate();
+		ptr.drawCircle(300, 300, 200);
+		Engine::get().tick(frameTime);
+
 
 		});
 }

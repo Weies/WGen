@@ -1,4 +1,5 @@
 #pragma once
+#include"render.h"
 
 class RenderBase {
 public:
@@ -61,12 +62,15 @@ public:
 
 class Render {
 public:
-	vector<RenderBase*>renders;
+
+	vector<RenderBase*> mRenders;
+
 	Render() {}
+
 	~Render() {
-		for (auto v : renders)
+		for (auto v : mRenders)
 			delete v;
-		renders.clear();
+		mRenders.clear();
 	}
 	virtual void tick() {
 		tick_ui();
@@ -83,17 +87,25 @@ public:
 		drawSkybox();
 		drawAxis();
 		drawParticle();
+		drawUI();
+	}
+
+	void drawUI()
+	{
+		auto scene = SceneManager::get().mScene.get();
+		static Render3D ren;
+		ren.renderList(scene->mCamera->getBlock());
 	}
 
 	void drawModel() {
 		auto scene = SceneManager::get().mScene;
 		for (const auto& mo : scene->mModels) {
 			RenderBase* rd = nullptr;
-			if (mo.desired == RenderStrategy::Undefined && renders.size())
+			if (mo.desired == RenderStrategy::Undefined && mRenders.size())
 			{
-				renders[0]->render(mo); continue;
+				mRenders[0]->render(mo); continue;
 			}
-			for (auto p : renders)
+			for (auto p : mRenders)
 			{
 				if (p->strategy == mo.desired) {
 					rd = p; break;
@@ -106,12 +118,12 @@ public:
 				{
 				case RenderStrategy::Undefined:
 				case RenderStrategy::NonPBR_PhongShading:
-					renders.push_back(new NonPBRRenderBase);
+					mRenders.push_back(new NonPBRRenderBase);
 					break;
 				default:
 					break;
 				}
-				renders.back()->render(mo);
+				mRenders.back()->render(mo);
 			}
 		}
 	}
@@ -125,7 +137,7 @@ public:
 
 	}
 
-	
+
 
 };
 

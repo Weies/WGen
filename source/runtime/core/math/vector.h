@@ -689,6 +689,19 @@ namespace gm {
 	std::ostream& operator<<(std::ostream& o, const vector4<T>& m) {
 		return o << m.str();
 	}
+
+	template<class T>
+	TRadian<T> angle(const vector3<T>& a, const vector3<T>& b)
+	{
+		return acos<T>(dot<T>(a, b) / a.len() * b.len());
+	}
+
+	template<class T>
+	TRadian<T> angle(const vector2<T>& a, const vector2<T>& b)
+	{
+		return  acos<T>(dot<T>(a, b) / a.len() * b.len());
+	}
+
 }
 
 ////表示层的向量，内部存储为XYZ坐标系

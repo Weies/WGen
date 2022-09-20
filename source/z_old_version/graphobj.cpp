@@ -173,7 +173,7 @@ void BezierCurve::draw()
 		glPoint(tt[0]);
 	}
 	glOver();
-	drawString(20, win_h - 70, "Bezier曲线");
+	drawString(20, win_h - 70, L"Bezier曲线");
 	if (busy)num++, busy = false;
 }
 
@@ -256,7 +256,7 @@ void BezierSurf::draw()
 		}
 	}
 	glOver3();
-	drawString(20, win_h - 70, "Bezier曲线");
+	drawString(20, win_h - 70, L"Bezier曲线");
 	if (busy)num++, busy = false;
 }
 
@@ -314,7 +314,7 @@ void BSplineCurve::draw()
 		}
 	}
 	glOver();
-	drawString(20, win_h - 70, "B样条曲线");
+	drawString(20, win_h - 70, L"B样条曲线");
 	if (busy)busy = false, ++num, setClamped();
 }
 void BSplineCurve::setClamped()

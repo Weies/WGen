@@ -175,6 +175,7 @@
     <ClInclude Include="source\runtime\core\math\angle.h" />
     <ClInclude Include="source\runtime\core\meta\json.h" />
     <ClInclude Include="source\runtime\core\meta\serializer.h" />
+    <ClInclude Include="source\runtime\Engine.h" />
     <ClInclude Include="source\runtime\function\base\animation_base.h" />
     <ClInclude Include="source\runtime\function\base\baseClass.h" />
     <ClInclude Include="source\runtime\core\base\basis.h" />

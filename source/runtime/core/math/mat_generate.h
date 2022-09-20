@@ -31,10 +31,10 @@ namespace gm {
 	}
 
 	template<typename T>
-	mat4x4<T> perspective(T fovy, T aspect, T zNear, T zFar)
+	mat4x4<T> perspective(TRadian<T> fovy, T aspect, T zNear, T zFar)
 	{
 
-		T const tanHalfFovy = tan(fovy / static_cast<T>(2));
+		T const tanHalfFovy = tan(fovy.rad() / static_cast<T>(2));
 
 		mat4x4<T> Result(static_cast<T>(0));
 		Result[0][0] = static_cast<T>(1) / (aspect * tanHalfFovy);
@@ -46,10 +46,9 @@ namespace gm {
 	}
 
 	template<typename T, typename R>
-	mat4x4<T> rotate(mat4x4<T> const& m, R degree, vector3<T> const& v)
+	mat4x4<T> rotate(mat4x4<T> const& m, TRadian<T> radian, vector3<T> const& v)
 	{
-		T angle = (T)degree;
-		T const a = radians(angle);
+		T const a = radian.rad();
 		T const c = cos(a);
 		T const s = sin(a);
 

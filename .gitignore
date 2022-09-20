@@ -4,4 +4,6 @@
 /bin/*
 /Debug/*
 /x64/*
+*.vcxproj
+*.filters
 *.exe

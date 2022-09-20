@@ -6,7 +6,7 @@
 namespace gm {
 
 	//使用弧度
-	inline vec3 eulerDir(float pitch, float yaw) {
+	inline vec3 eulerDir(Radian pitch, Radian yaw) {
 		return vec3(sin(yaw) * cos(pitch), sin(pitch), cos(yaw) * cos(pitch));
 	}
 
@@ -16,7 +16,7 @@ namespace gm {
 	// v需要已经normalize
 	inline qua dirvQua(const vec3& v) {
 		vec2 t = PitchYaw(v);
-		return qua(vec3(1, 0, 0), -t.x) * qua(vec3(0, 1, 0), t.y);
+		return qua(vec3(1, 0, 0), Radian(-t.x)) * qua(vec3(0, 1, 0), Radian(t.y));
 	}
 
 }
