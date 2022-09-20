@@ -5,5 +5,3 @@
 /Debug/*
 /x64/*
 *.exe
-*.dll
-*lib
