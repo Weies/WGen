@@ -2,6 +2,7 @@
 #include"../log/debuger.h"
 #include"math_defs.h"
 #include"rand.h"
+#include"angle.h"
 
 namespace gm {
 

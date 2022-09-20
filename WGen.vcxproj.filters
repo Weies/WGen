@@ -344,6 +344,9 @@
     <ClInclude Include="source\runtime\function\network\network.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="source\runtime\core\math\angle.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="source\shader\pbr.shader" />
