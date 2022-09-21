@@ -43,8 +43,8 @@ public:
 	virtual void scale(float s) {
 		mModelTransform.s *= s;
 	}
-	virtual void rotate(float degree, vec3 axis) {
-		mModelTransform.q = mModelTransform.q * qua(axis, radians(degree), true);
+	virtual void rotate(Degree degree, vec3 axis) {
+		mModelTransform.q = mModelTransform.q * qua(axis, degree, true);
 	}
 	virtual void setColor(const vec4& co) {
 		mColor = co;

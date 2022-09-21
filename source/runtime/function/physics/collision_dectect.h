@@ -32,6 +32,7 @@ struct trian {
 	}
 	vec3 p[3];
 };
+
 struct line {
 	line() {}
 	line(vec3 v1, vec3 v2) {
@@ -48,6 +49,7 @@ struct line {
 	}
 	vec3 p[2];
 };
+
 struct ball {
 	ball() {}
 	ball(vec3 origin, float radius) {

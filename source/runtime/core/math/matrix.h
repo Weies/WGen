@@ -266,8 +266,9 @@ namespace gm {
 		quaternion(const vector3<T>& v) {
 			x = v.x; y = v.y; z = v.z; w = 0.0f;
 		}
-		quaternion(vector3<T> axis, T const& rad, bool norm = false) {
+		quaternion(vector3<T> axis, TAngle<T> angle, bool norm = false) {
 			if (norm) axis = axis.normalize();
+			T rad = angle.rad();
 			w = cos(rad / 2.0); T si = sin(rad / 2.0);
 			x = axis.x * si; y = axis.y * si; z = axis.z * si;
 		}

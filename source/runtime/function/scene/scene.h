@@ -24,7 +24,7 @@ public:
 	}
 
 	vector<RenderModel> mModels;
-	shared_ptr<Camera> mCamera;
+	Camera* mCamera;
 	RenderModel mAxis;
 };
 

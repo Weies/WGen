@@ -6,7 +6,7 @@ class SceneManager :public Singleton<SceneManager> {
 protected:
 	friend class Singleton<SceneManager>;
 	SceneManager() :mScene(new Scene) {
-		mScene->mCamera.reset(&ca);
+		mScene->mCamera = &ca;
 		auto hand = SceneBuilder::buildSphere(36);
 		mMeshHandleMap.insert({ "[Sphere{seg=36;}]",hand });
 	}
@@ -59,7 +59,7 @@ public:
 		mMeshHandleMap.insert({ mesh_desc, hand });
 		//mScene->addMesh()
 	}
-	virtual void tick() {
+	virtual void tick(){
 		syncObejct();
 	}
 	void addObject(GameObjectDesc&& go_desc) {

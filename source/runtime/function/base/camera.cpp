@@ -6,7 +6,7 @@
 Camera::Camera()
 {
 	mo.t = vec3(0, 0, -4.0);
-	proj = perspective(gm::radians(fovy), win_w / win_h, zNear, zFar);
+	proj = perspective<float>(fovy, win_w / win_h, zNear, zFar);
 	auto fun = [this](me& e)->bool {
 		if (e.mBtn == MOUSE_BUTTON_LEFT)
 			up(0.8);
@@ -21,7 +21,7 @@ Camera::Camera()
 	evtor.keydown() = [this](ke& e)->bool {return processKey(e); };
 
 	evtor.windowreshape() = ([this](int x, int y)->bool {
-		proj = perspective(radians(fovy), win_w / win_h, zNear, zFar);
+		proj = perspective<float>(fovy, win_w / win_h, zNear, zFar);
 		return false;
 		});
 }

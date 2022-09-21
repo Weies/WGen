@@ -6,15 +6,8 @@
 // this engine 1 means 1 meter
 
 #include"function/ui/ui_include.h"
-#include"function/audio/audio.h"
-#include"function/scene/scene_manager.h"
-#include"function/framework/world/world_manager.h"
-#include"function/framework/component/mesh.h"
-#include"engine.h"
-
 
 Window main_win(800, 600, "Weies's Drawing", true);
-
 
 class __initer {
 public:
