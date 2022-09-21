@@ -10,6 +10,13 @@
 #include<sstream>
 #include<string>
 
+inline std::wstring wstr(const string& s) {
+	std::wstring o; o.reserve(s.size() + 1);
+	for (int i = 0; i < s.size(); ++i) {
+		o.push_back(s[i]);
+	}
+	return o;
+}
 
 class StringConventer {
 public:
@@ -100,7 +107,7 @@ public:
 			if (*(format + 1) == '}') {
 				o << arg;
 				format += 2;
-				o << format;
+				o << format;o << "\n";
 				if (qFlush)flush();
 				return *this;
 			}

@@ -4,6 +4,9 @@
 #include"function/base/animation_base.h"
 using namespace globals;
 
+
+
+
 class Animation {
 public:
 	string			mName;

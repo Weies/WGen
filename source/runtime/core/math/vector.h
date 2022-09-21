@@ -246,10 +246,11 @@ namespace gm {
 			return x == v.x && y == v.y && z == v.z;
 		}
 
-		void rand() {
+		vector3<T>& rand() {
 			x = Randf();
 			y = Randf();
 			z = Randf();
+			return *this;
 		}
 		void rand(T start, T end) {
 			x = Randf(start, end);
@@ -496,11 +497,12 @@ namespace gm {
 			return vector4<T>(x * sqt, y * sqt, z * sqt, w * sqt);
 		}
 
-		void rand() {
+		vector4<T>& rand() {
 			x = Randf();
 			y = Randf();
 			z = Randf();
 			w = Randf();
+			return *this;
 		}
 		void rand(T start, T end) {
 			x = Randf(start, end);

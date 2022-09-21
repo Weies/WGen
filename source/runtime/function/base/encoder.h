@@ -90,6 +90,27 @@ public:
 		if (iconv(cd, &inbuf, &inlen, &p, &outlen) == -1)return false;
 		return true;
 	}
+	static string getUnicode(const string& s) {
+		//先检查字符串是否是GBK编码
+		iconv_t cd = iconv_open("UCS-2BE", "UCS-2BE"); if (cd == 0)return "error";
+		size_t inlen = s.size(); char* inbuf = (char*)s.c_str();
+		memset(outbuf, 0, 4096); char* p = outbuf; size_t outlen = 4096;
+		if (iconv(cd, &inbuf, &inlen, &p, &outlen) == -1)
+			memset(outbuf, 0, 4096), p = outbuf, outlen = 4096, inbuf = (char*)s.c_str(), inlen = s.size();
+		else { iconv_close(cd); return s; }
+		iconv_close(cd);
+
+		cd = iconv_open("UCS-2BE//IGNORE", "utf-8"); if (cd == 0)return "error";
+		if (iconv(cd, &inbuf, &inlen, &p, &outlen) == -1)
+			memset(outbuf, 0, 4096), p = outbuf, outlen = 4096, inbuf = (char*)s.c_str(), inlen = s.size();
+		else { iconv_close(cd); return outbuf; }
+		iconv_close(cd);
+
+		cd = iconv_open("UCS-2BE//IGNORE", "gb2312"); if (cd == 0)return "error";
+		if (iconv(cd, &inbuf, &inlen, &p, &outlen) != -1) { iconv_close(cd); return outbuf; }
+		iconv_close(cd);
+		return s;
+	}
 
 	static string getGBK(const string& s) {
 		//先检查字符串是否是GBK编码

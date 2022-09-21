@@ -36,5 +36,4 @@ public:
 		SceneManager::get().addObject(move(ret));
 	}
 
-
 };

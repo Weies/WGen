@@ -4,7 +4,7 @@
 //Handle -> Memory -> concrete data
 struct ResourceHandle {
 public:
-	uid mHandle;
+	uid mHandle{ 0 };
 
 	ResourceHandle() :mHandle(INVAILID_HANDLE) {}
 	ResourceHandle(uid handle) :mHandle(handle) {}
@@ -72,13 +72,14 @@ struct std::hash<MeshHandle> {
 };
 
 struct MaterialHandle {
-	TextureHandle		mBaseColorHandle;
-	TextureHandle		mDiffuseMapHandle;
-	TextureHandle		mSpecularMapHandle;
+	TextureHandle		mBaseColorHandle{ nullptr };
+	TextureHandle		mDiffuseMapHandle{ nullptr };
+	TextureHandle		mSpecularMapHandle{ nullptr };
 	TextureHandle		mNormalMapHandle;
-	TextureHandle		mMetallicMapHandle;
-	TextureHandle		mRoughnessMapHandle;
-	TextureHandle		mOcculusionMapHandle;
+	TextureHandle		mMetallicMapHandle{ nullptr };
+	TextureHandle		mRoughnessMapHandle{ nullptr };
+	TextureHandle		mOcculusionMapHandle{ nullptr };
+
 	bool operator==(const MaterialHandle& otr)const {
 		return otr.mBaseColorHandle == mBaseColorHandle;
 	}
@@ -92,32 +93,6 @@ struct std::hash<MaterialHandle> {
 	}
 };
 
-class RenderMaterial {
-public:
-	vec4				mBaseColor{ 1.0,1.0,1.0,1.0 };
-	vec3				mDiffuse{ 1.0,1.0,1.0 };
-	vec3				mSpecular{ 1.0,1.0,1.0 };
-	float				mMetallic{ 0.5f };
-	float				mRoughness{ 0.5f };
-	float				mOcculusion{ 1.0f };
-	bool operator==(const RenderMaterial& otr)const {
-		return otr.mBaseColorHandle == mBaseColorHandle;
-	}
-	//base color will be treat as albedo
-	TextureHandle		mBaseColorHandle;
-
-	TextureHandle		mDiffuseMapHandle;
-
-	TextureHandle		mSpecularMapHandle;
-
-	TextureHandle		mNormalMapHandle;
-
-	TextureHandle		mMetallicMapHandle;
-
-	TextureHandle		mRoughnessMapHandle;
-
-	TextureHandle		mOcculusionMapHandle;
-};
 
 struct ModelHandle;
 
