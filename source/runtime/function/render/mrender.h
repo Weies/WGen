@@ -1,5 +1,6 @@
 #pragma once
 #include"render.h"
+#include"function/scene/scene_manager.h"
 
 class RenderBase {
 public:

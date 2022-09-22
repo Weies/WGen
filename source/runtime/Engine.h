@@ -1,13 +1,10 @@
 #pragma once
 
 #include"WGen.h"
+#include"function/ui/ui_include.h"
 #include"function/audio/audio.h"
-#include"function/scene/scene_manager.h"
-#include"function/framework/world/world_manager.h"
-#include"function/framework/component/mesh.h"
 #include"function/render/mrender.h"
-#include"function/model/model_include.h"
-
+#include"function/framework/world/world_manager.h"
 
 class Engine :public Singleton<Engine> {
 public:
@@ -28,6 +25,7 @@ public:
 	}
 	mutex mut;
 protected:
+
 
 	Render mRedner;
 };

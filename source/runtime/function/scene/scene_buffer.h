@@ -2,6 +2,7 @@
 #include"scene_memory.h"
 #include"../base/render_base.h"
 #include"../base/camera.h"
+#include"resource/resource_handle.h"
 
 class SceneBuffer {
 public:

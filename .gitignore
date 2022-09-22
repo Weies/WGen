@@ -1,9 +1,12 @@
 /.vs/*
 /.git/*
-/asset/*
 /bin/*
 /Debug/*
+/asset/*
 /x64/*
-*.vcxproj
-*.filters
 *.exe
+*.pdb
+*.dro
+*.droa
+*.drot
+
