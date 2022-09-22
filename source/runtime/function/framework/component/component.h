@@ -1,7 +1,9 @@
 #pragma once
 #include"function/base/base_include.h"
+#include"core/meta/json.h"
 
 class GObject;
+class ComponentHelper;
 
 class Component {
 public:
@@ -11,16 +13,24 @@ public:
 	Component(GObject* parent) :mParent(parent) {}
 	void setParent(GObject* par) {
 		mParent = par;
+		debug("parent");
 	}
 
 	virtual const string& type() = 0;
+
+
 
 	virtual ~Component() {}
 	virtual void tick(float deltaTime) {}
 	virtual void destory() {}
 
 private:
+
 	friend class GObject;
+	friend class ComponentHelper;
+
+	virtual void finalize(const Json& j) = 0;
+
 	void _tick(float deltaTime) {
 		if (mIsTickInEditorMode || !isEditorMode)
 			tick(deltaTime);
@@ -34,7 +44,17 @@ class ComponentHelper :public Singleton<ComponentHelper>
 public:
 	map<string, void* (*)()> mComponents;
 
+	Component* initComponent(const Json& comp_json)
+	{
+		const string& type = comp_json["Type"].string_value();
 
+		Component* comp = (Component*)mComponents[type]();
+
+		comp->finalize(comp_json);
+
+		return comp;
+		//if()
+	}
 };
 
 class __ComponentRegister
@@ -47,8 +67,6 @@ public:
 		debug << "Registered component: " << ComponentName << endl;
 	}
 };
-
-#define RegisterTypeName(name) 
 
 
 #define RegisterComponent(name) \
@@ -68,6 +86,11 @@ using Transform = SQT;
 class TransformComponent :public Component {
 public:
 	TransformComponent() {}
+
+	virtual void finalize(const Json& j) override
+	{
+
+	}
 
 	RegisterComponent(Transform);
 

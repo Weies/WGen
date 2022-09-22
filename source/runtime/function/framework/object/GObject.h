@@ -2,6 +2,8 @@
 #include"core/base/basis.h"
 #include<unordered_set>
 #include"../component/component.h"
+#include"../component/animation.h"
+#include"../component/mesh.h"
 #include"core/core.h"
 
 #define INVAILID_ID
@@ -30,14 +32,15 @@ public:
 		Json obj = JsonHelpher::load(object_path);
 
 		mId = obj["Id"].int_value();
-		mName = obj["mName"].string_value();
+		mName = obj["Name"].string_value();
 		mDefinitionUrl = obj["DefinitionUrl"].string_value();
 
 		Json::array comps = obj["Components"].array_items();
 
 		for (auto& comp : comps)
 		{
-
+			mComponents.push_back(ComponentHelper::get().initComponent(comp));
+			mComponents.back()->setParent(this);
 		}
 	}
 
@@ -45,14 +48,15 @@ public:
 		sptr->mParent = this;
 		mComponents.push_back(sptr);
 	}
+
 	template<class TComponent>
 	TComponent* tryGetComp(const string& comp_type) const {
 		for (auto& v : mComponents) {
-			if (v->mType == comp_type) {
+			if (v->type() == comp_type) {
 				return (TComponent*)v;
 			}
 		}
 		return nullptr;
 	}
-#define tryGetComp(comp_name) tryGetComp<comp_name>(#comp_name)
+#define tryGetComp(comp_name) tryGetComp<comp_name##Component>(#comp_name)
 };

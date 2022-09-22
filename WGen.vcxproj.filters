@@ -78,6 +78,9 @@
     <ClCompile Include="source\runtime\function\network\network.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="source\runtime\function\framework\component\mesh.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\runtime\function\base\baseClass.h">

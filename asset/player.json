@@ -5,7 +5,10 @@
   "Components": [
     {
       "Type": "Mesh",
-      "Ref": "asset/yuan/ying.dro"
+      "Ref": "asset/models/cube.off"
+    },
+    {
+      "Type": "Transform"
     }
   ]
 }

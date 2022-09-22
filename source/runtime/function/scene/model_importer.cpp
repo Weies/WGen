@@ -159,7 +159,7 @@ void processNode(ModelDesc& m, aiNode* node, const aiScene* scene, map<string, i
 	for (unsigned int i = 0; i < node->mNumMeshes; i++)
 	{
 		aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-		//processMesh(m, mesh, scene, bone_id, mask);
+		processMesh(m, mesh, scene, bone_id, mask);
 	}
 	for (unsigned int i = 0; i < node->mNumChildren; i++)
 	{
@@ -221,7 +221,7 @@ Importer::Importer() :hand(0), imp(new Assimp::Importer) {}
 
 bool Importer::Import(ModelDesc& m, const string& path, ll mask) {
 	if (hand)delete (aiScene*)hand;
-	if (imp)((Assimp::Importer*)imp)->FreeScene();
+	//if (imp)((Assimp::Importer*)imp)->FreeScene();
 	//m.clear();
 	Assimp::Importer* importer = (Assimp::Importer*)imp;
 	const aiScene* scene = importer->ReadFile(path, mask);

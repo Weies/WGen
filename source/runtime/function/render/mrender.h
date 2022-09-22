@@ -17,7 +17,8 @@ public:
 	virtual void render(const RenderModel& m) {
 		if (m.mMeshes.size() == 0)return;
 		auto& cam = SceneManager::get().mScene->mCamera;
-		shader.setMat4("transform", cam->getBlock().mPVTransform);
+		//debug << perspective<float>(Degree(50), win_w / win_h, 1, 1000) << endl;
+		shader.setMat4("transform", perspective<float>(Degree(50), win_w / win_h, 1, 1000));
 		shader.setMat4("model", mat4(1.0));
 
 		for (auto& mesh : m.mMeshes) {
@@ -101,6 +102,8 @@ public:
 	void drawModel() {
 		auto scene = SceneManager::get().mScene;
 		for (const auto& mo : scene->mModels) {
+			if (mo.mMeshes.size() < 1)continue;
+
 			RenderBase* rd = nullptr;
 			if (mo.desired == RenderStrategy::Undefined && mRenders.size())
 			{

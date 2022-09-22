@@ -19,6 +19,7 @@ Camera::Camera()
 	evtor.mousemove() = fun;
 	evtor.keystick() = [this](ke& e)->bool {return processKey(e); };
 	evtor.keydown() = [this](ke& e)->bool {return processKey(e); };
+	evtor.mousescroll() = [this](me& e)->bool { debug(e.y); forward(e.y * 3); return true; };
 
 	evtor.windowreshape() = ([this](int x, int y)->bool {
 		proj = perspective<float>(fovy, win_w / win_h, zNear, zFar);

@@ -3,9 +3,10 @@
 
 int main()
 {
-	//SceneManager::get().addMesh()
-	debug << ComponentHelper::get().mComponents.begin()->first << endl;
-	main_win.set(SHOW_FPS, true);
+
+	Engine::get().engineInit();
+	ca.moveto(vec3(100,100,100));
+	ca.lookTo({ 0,0,0 });
 
 	main_win.loop([]() {
 

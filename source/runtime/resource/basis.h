@@ -105,12 +105,15 @@ class AnimationResult {
 public:
 
 };
+
 class MeshCompDesc {
 public:
 	MeshDesc			mMeshDesc;
 	MaterialDesc		mMaterialDesc;
 	TransformDesc		mTransDesc;
 };
+
+
 class GameObjectDesc {
 public:
 	uid						mGOID;

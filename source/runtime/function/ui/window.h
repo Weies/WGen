@@ -67,6 +67,8 @@ public:
 		};
 		transform = mat3(1.0); mPriority = 300.0; mIsShowing = true; mPosition.set(0, 0);
 		fps_str = "FPS: 60";
+
+		set(SHOW_FPS, true);
 	}
 
 	void setNoBorder() {
