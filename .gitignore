@@ -9,4 +9,5 @@
 *.dro
 *.droa
 *.drot
+!*.json
 

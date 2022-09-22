@@ -1,5 +1,7 @@
 #pragma once
 #include"../object/GObject.h"
+#include"core/meta/json.h"
+
 class Level {
 public:
 	virtual ~Level() {
@@ -7,6 +9,22 @@ public:
 			p.second->~GObject();
 		}
 		mGObjects.clear();
+	}
+
+	void initialize(const string& level_config_path)
+	{
+		Json level = JsonHelpher::load(level_config_path);
+		Json::array objects = level["objects"].array_items();
+
+		for (auto& obj : objects)
+		{
+			string obj_path = obj.string_value();
+			GObject* obj = new GObject;
+			obj->initialize(obj_path);
+			
+			addGObject(obj);
+		}
+
 	}
 	void addGObject(GObject* go)
 	{

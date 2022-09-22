@@ -2,6 +2,7 @@
 #include"function/base/base_include.h"
 
 class GObject;
+
 class Component {
 public:
 	GObject* mParent{ nullptr };
@@ -17,6 +18,7 @@ public:
 	virtual ~Component() {}
 	virtual void tick(float deltaTime) {}
 	virtual void destory() {}
+
 private:
 	friend class GObject;
 	void _tick(float deltaTime) {

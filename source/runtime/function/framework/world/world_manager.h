@@ -9,20 +9,31 @@ public:
 		for (auto& p : mLevels) {
 			p->tickAll(delta_time);
 		}
-
 	}
+
 	void clear() {
 		for (auto& v : mLevels) {
 			delete v;
 		}
 		mLevels.resize(0);
 	}
+
 	//¼ÓÔØWorld
-	void initialize() {}
+	void initialize(const string& world_config_path)
+	{
+		Json world = JsonHelpher::load(world_config_path);
+
+		string default_level = world["default_level"].string_value();
+
+		mCurLevel = new Level;
+		mCurLevel->initialize(default_level);
+		mLevels.push_back(mCurLevel);
+	}
+
 	void loadPendingLevel() {
 		if (mPendingLevelURL.empty())return;
 	}
 	string mPendingLevelURL;
 	vector<Level*> mLevels;
-	Level* mCurLevel;
+	Level* mCurLevel{};
 };

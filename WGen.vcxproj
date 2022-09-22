@@ -270,6 +270,10 @@
     <ClInclude Include="thirdparty\json11\json11.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="asset\level.json" />
+    <None Include="asset\player.json" />
+    <None Include="asset\world.json" />
+    <None Include="config\engine.config.json" />
     <None Include="source\shader\pbr.shader" />
     <None Include="source\shader\pbrr.shader" />
     <None Include="source\shader\phong_shadow.shader" />

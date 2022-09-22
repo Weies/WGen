@@ -2,6 +2,8 @@
 #include"core/base/basis.h"
 #include<unordered_set>
 #include"../component/component.h"
+#include"core/meta/json.h"
+
 #define INVAILID_ID
 class GObject {
 public:
@@ -20,6 +22,22 @@ public:
 	void tick(float delta_time)const {
 		for (auto& co : mComponents) {
 			co->tick(delta_time);
+		}
+	}
+
+	void initialize(const string& object_path)
+	{
+		Json obj = JsonHelpher::load(object_path);
+
+		mId = obj["Id"].int_value();
+		mName = obj["mName"].string_value();
+		mDefinitionUrl = obj["DefinitionUrl"].string_value();
+
+		Json::array comps = obj["Components"].array_items();
+
+		for (auto& comp : comps)
+		{
+
 		}
 	}
 
