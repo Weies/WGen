@@ -4,6 +4,8 @@
 #include"resource/resource_handle.h"
 #include"scene_buffer.h"
 #include"function/animation/animation.h"
+#include"function/render/texture.h"
+
 #define JoinIdenticalVertices		2ll
 #define Triangulate					8ll
 #define GenNormals					32ll

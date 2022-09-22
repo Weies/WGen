@@ -2,7 +2,7 @@
 #include"core/base/basis.h"
 #include<unordered_set>
 #include"../component/component.h"
-#include"core/meta/json.h"
+#include"core/core.h"
 
 #define INVAILID_ID
 class GObject {

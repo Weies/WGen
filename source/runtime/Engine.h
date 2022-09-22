@@ -21,10 +21,7 @@ public:
 		WorldManager::get().initialize(world_url);
 		//Json j;j.pa
 
-
-
-		WorldManager::get().mPendingLevelURL = "";
-
+		WorldManager::get().mPendingLevelURL = "asset/level.json";
 
 		return true;
 	}
