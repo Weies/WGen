@@ -40,15 +40,14 @@ public:
 class Register
 {
 public:
-	Register(const char* ComponentName)
+	template<class T>
+	Register(const char* ComponentName, void(*func)(T* p))
 	{
-		ComponentHelper::get().mComponents.insert({ string(ComponentName), nullptr });
+		ComponentHelper::get().mComponents.insert({ string(ComponentName), func });
 	}
 };
 
-#define RegisterTypeName(name) private:\
-static inline const Register __register##name = Register(#name);\
-public:
+#define RegisterTypeName(name) 
 
 
 #define RegisterComponent(name) \
@@ -57,7 +56,10 @@ const string& type() override\
 	static const string type_name(#name);\
 	return type_name;\
 };\
-RegisterTypeName(name)
+private:\
+static inline const  auto lambda = []()->name##Component*{return new name##Component();};\
+static inline const Register __register##name = Register(#name,lambda);\
+public:
 
 
 
@@ -65,10 +67,11 @@ using Transform = SQT;
 class TransformComponent :public Component {
 public:
 	TransformComponent() {}
+	void Construct() {}
 
-	RegisterComponent(Transform);
+	//RegisterComponent(Transform);
 
-
+	static inline const  auto lambda = []()->TransformComponent* { return new TransformComponent(); };
 
 	virtual void tick(float deltaTime) {
 		//Render::get().contex.mModelTransform = mTransform;
