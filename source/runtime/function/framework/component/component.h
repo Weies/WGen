@@ -32,18 +32,19 @@ using sptr = shared_ptr<T>;
 class ComponentHelper :public Singleton<ComponentHelper>
 {
 public:
-	map<string, void*> mComponents;
+	map<string, void* (*)()> mComponents;
 
 
 };
 
-class Register
+class __ComponentRegister
 {
 public:
-	template<class T>
-	Register(const char* ComponentName, void(*func)(T* p))
+
+	__ComponentRegister(const char* ComponentName, void* (*func)())
 	{
 		ComponentHelper::get().mComponents.insert({ string(ComponentName), func });
+		debug << "Registered component: " << ComponentName << endl;
 	}
 };
 
@@ -57,8 +58,8 @@ const string& type() override\
 	return type_name;\
 };\
 private:\
-static inline const  auto lambda = []()->name##Component*{return new name##Component();};\
-static inline const Register __register##name = Register(#name,lambda);\
+static inline void* __construct(){return new name##Component();};\
+static inline const __ComponentRegister __register##name = __ComponentRegister(#name,__construct);\
 public:
 
 
@@ -67,11 +68,8 @@ using Transform = SQT;
 class TransformComponent :public Component {
 public:
 	TransformComponent() {}
-	void Construct() {}
 
-	//RegisterComponent(Transform);
-
-	static inline const  auto lambda = []()->TransformComponent* { return new TransformComponent(); };
+	RegisterComponent(Transform);
 
 	virtual void tick(float deltaTime) {
 		//Render::get().contex.mModelTransform = mTransform;

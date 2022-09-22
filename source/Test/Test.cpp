@@ -5,6 +5,7 @@ int main()
 {
 	//SceneManager::get().addMesh()
 	debug << ComponentHelper::get().mComponents.begin()->first << endl;
+	main_win.set(SHOW_FPS, true);
 
 	main_win.loop([]() {
 
