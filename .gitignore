@@ -2,7 +2,6 @@
 /.git/*
 /bin/*
 /Debug/*
-/asset/*
 /x64/*
 *.exe
 *.pdb
