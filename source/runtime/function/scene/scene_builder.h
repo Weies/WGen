@@ -25,7 +25,7 @@ public:
 		auto& model_file = desc.mMeshFile;
 		ModelDesc ret;
 		if (model_file.empty())return ret;
-		/*预定义对象，直接用代码生成*/
+		/*预定义对象，直接用代码生成*///[Sphere{36}]
 		if (model_file[0] == '[') {
 			//const char* p = &mesh_file[1];
 			int p = model_file.find('{');
@@ -35,6 +35,7 @@ public:
 				ret.mHandles.push_back(buildSphere(seg));
 				if (desc.mCompDescs.size() != 0)
 					ret.mMaterials.push_back(desc.mCompDescs[0].mMaterialDesc);
+				else ret.mMaterials.push_back({});
 				return ret;
 			}
 			return ModelDesc{};

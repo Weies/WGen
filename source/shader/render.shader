@@ -15,6 +15,7 @@ void main() {
 	pos = vec3(model * vec4(p, 1.0));
 	normal = norm;
 	texCoord = texcoord;
+
 }
 
 %

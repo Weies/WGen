@@ -104,7 +104,7 @@ public:
 	void anim(const vec3& p, double transition = 2000, double stay = 2000, float dis = 0.12) {
 		anim(SQT(1.0, dirvQua(normalize(p - mo.p)), p), transition, stay, dis);
 	}
-	float mSpeed = 0.08;//前进速度
+	float mSpeed = 1.6;//前进速度
 	float mSensity = 0.0015;//鼠标灵敏度
 	Degree mPitchAngle = 0; Degree mYawAngle = 0; Degree mRollAngle = 0;
 	double mTransStartTime = 0; double mTransEndTime = 0;

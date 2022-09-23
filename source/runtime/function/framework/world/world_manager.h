@@ -21,7 +21,7 @@ public:
 	//º”‘ÿWorld
 	void initialize(const string& world_config_path)
 	{
-		Json world = JsonHelpher::load(world_config_path);
+		Json world = JsonHelper::load(world_config_path);
 
 		string default_level = world["default_level"].string_value();
 

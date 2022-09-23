@@ -17,8 +17,8 @@ public:
 	virtual void render(const RenderModel& m) {
 		if (m.mMeshes.size() == 0)return;
 		auto& cam = SceneManager::get().mScene->mCamera;
-		shader.setMat4("transform", cam->getBlock().mPVTransform);
-		shader.setMat4("model", mat4(1.0));
+		shader.setMat4("transform", cam->getBlock().mPVTransform * m.mModelTransform);
+		shader.setMat4("model", m.mModelTransform);
 
 		for (auto& mesh : m.mMeshes) {
 			SceneBuffer::memory(mesh.mVBH)->bind();
@@ -101,6 +101,8 @@ public:
 	void drawModel() {
 		auto scene = SceneManager::get().mScene;
 		for (const auto& mo : scene->mModels) {
+			if (mo.mMeshes.size() < 1)continue;
+
 			RenderBase* rd = nullptr;
 			if (mo.desired == RenderStrategy::Undefined && mRenders.size())
 			{

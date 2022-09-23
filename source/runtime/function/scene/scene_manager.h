@@ -11,6 +11,13 @@ protected:
 		mMeshHandleMap.insert({ "[Sphere{seg=36;}]",hand });
 	}
 public:
+
+	vector<GameObjectDesc>					mGODescs;
+	unordered_map<string, TextureHandle>	mTextureHandleMap;
+	unordered_map<string, MeshHandle>		mMeshHandleMap;
+	unordered_map<string, ModelHandle>		mModelHandleMap;
+	shared_ptr<Scene>						mScene;
+
 	MeshHandle getMeshHandle(const string& mesh_file) {
 		auto it = mMeshHandleMap.find(mesh_file);
 		if (it != mMeshHandleMap.end())
@@ -59,7 +66,7 @@ public:
 		mMeshHandleMap.insert({ mesh_desc, hand });
 		//mScene->addMesh()
 	}
-	virtual void tick(){
+	virtual void tick() {
 		syncObejct();
 	}
 	void addObject(GameObjectDesc&& go_desc) {
@@ -113,9 +120,5 @@ public:
 		mGODescs.clear();
 	}
 
-	vector<GameObjectDesc>					mGODescs;
-	unordered_map<string, TextureHandle>	mTextureHandleMap;
-	unordered_map<string, MeshHandle>		mMeshHandleMap;
-	unordered_map<string, ModelHandle>		mModelHandleMap;
-	shared_ptr<Scene>						mScene;
+
 };

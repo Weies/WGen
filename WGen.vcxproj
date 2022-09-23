@@ -97,6 +97,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOW;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <MinimalRebuild>true</MinimalRebuild>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -163,6 +164,7 @@
     <ClCompile Include="source\runtime\function\base\camera.cpp" />
     <ClCompile Include="source\runtime\function\event\events.cpp" />
     <ClCompile Include="source\runtime\function\extern_variables.cpp" />
+    <ClCompile Include="source\runtime\function\framework\component\mesh.cpp" />
     <ClCompile Include="source\runtime\function\framework\object\GObject.h" />
     <ClCompile Include="source\runtime\function\model\render_mseh.cpp" />
     <ClCompile Include="source\runtime\function\model\triangleMesh.cpp" />

@@ -13,7 +13,7 @@ public:
 
 	void initialize(const string& level_config_path)
 	{
-		Json level = JsonHelpher::load(level_config_path);
+		Json level = JsonHelper::load(level_config_path);
 		Json::array objects = level["objects"].array_items();
 
 		for (auto& obj : objects)

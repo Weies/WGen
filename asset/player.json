@@ -5,7 +5,52 @@
   "Components": [
     {
       "Type": "Mesh",
-      "Ref": "asset/yuan/ying.dro"
+      "Ref": "asset/models/key.obj",
+      "Meshes": [
+        {
+          "MeshDesc": {
+            "MeshName": "Main"
+          },
+          "MaterialDesc": {
+
+          },
+          "TransformDesc": {
+            "Translate": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "Scale": {
+              "x": 1,
+              "y": 1,
+              "z": 1
+            },
+            "Rotation": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "Type": "Transform",
+      "Translate": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "Scale": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "Rotation": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      }
     }
   ]
 }

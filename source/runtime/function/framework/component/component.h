@@ -1,7 +1,9 @@
 #pragma once
 #include"function/base/base_include.h"
+#include"core/core.h"
 
 class GObject;
+class ComponentHelper;
 
 class Component {
 public:
@@ -11,16 +13,24 @@ public:
 	Component(GObject* parent) :mParent(parent) {}
 	void setParent(GObject* par) {
 		mParent = par;
+		debug("parent");
 	}
 
 	virtual const string& type() = 0;
+
+
 
 	virtual ~Component() {}
 	virtual void tick(float deltaTime) {}
 	virtual void destory() {}
 
 private:
+
 	friend class GObject;
+	friend class ComponentHelper;
+
+	virtual void finalize(const Json& j) = 0;
+
 	void _tick(float deltaTime) {
 		if (mIsTickInEditorMode || !isEditorMode)
 			tick(deltaTime);
@@ -32,22 +42,33 @@ using sptr = shared_ptr<T>;
 class ComponentHelper :public Singleton<ComponentHelper>
 {
 public:
-	map<string, void*> mComponents;
+	map<string, void* (*)()> mComponents;
 
+	
 
-};
-
-class Register
-{
-public:
-	template<class T>
-	Register(const char* ComponentName, void(*func)(T* p))
+	Component* initComponent(const Json& comp_json)
 	{
-		ComponentHelper::get().mComponents.insert({ string(ComponentName), func });
+		const string& type = comp_json["Type"].string_value();
+
+		Component* comp = (Component*)mComponents[type]();
+
+		comp->finalize(comp_json);
+
+		return comp;
+		//if()
 	}
 };
 
-#define RegisterTypeName(name) 
+class __ComponentRegister
+{
+public:
+
+	__ComponentRegister(const char* ComponentName, void* (*func)())
+	{
+		ComponentHelper::get().mComponents.insert({ string(ComponentName), func });
+		debug << "Registered component: " << ComponentName << endl;
+	}
+};
 
 
 #define RegisterComponent(name) \
@@ -57,21 +78,23 @@ const string& type() override\
 	return type_name;\
 };\
 private:\
-static inline const  auto lambda = []()->name##Component*{return new name##Component();};\
-static inline const Register __register##name = Register(#name,lambda);\
+static inline void* __construct(){return new name##Component();};\
+static inline const __ComponentRegister __register##name = __ComponentRegister(#name,__construct);\
 public:
 
 
 
-using Transform = SQT;
+
 class TransformComponent :public Component {
 public:
 	TransformComponent() {}
-	void Construct() {}
 
-	//RegisterComponent(Transform);
+	virtual void finalize(const Json& j) override
+	{
+		mTransform = JsonHelper::parseTransform(j);
+	}
 
-	static inline const  auto lambda = []()->TransformComponent* { return new TransformComponent(); };
+	RegisterComponent(Transform);
 
 	virtual void tick(float deltaTime) {
 		//Render::get().contex.mModelTransform = mTransform;

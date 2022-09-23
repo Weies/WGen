@@ -14,7 +14,7 @@ public:
 
 	bool engineInit()
 	{
-		Json engine_config = JsonHelpher::load("config/engine.config.jso");
+		Json engine_config = JsonHelper::load("config/engine.config.json");
 
 		string world_url = engine_config["default_world"].string_value();
 
