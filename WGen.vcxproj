@@ -252,6 +252,7 @@
     <ClInclude Include="source\runtime\platform\path\null.h" />
     <ClInclude Include="source\runtime\resource\asset_manager\asset_manager.h" />
     <ClInclude Include="source\runtime\resource\basis.h" />
+    <ClInclude Include="source\runtime\resource\json_helper.h" />
     <ClInclude Include="source\runtime\resource\resource_handle.h" />
     <ClInclude Include="source\runtime\WGen.h" />
     <ClInclude Include="source\runtime\resource\res_type\common\level.h" />
@@ -284,4 +285,9 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties asset_4player_1json__JsonSchema="https://appliedengdesign.github.io/cnccodes-json-schema/draft/2022-07/schema" />
+    </VisualStudio>
+  </ProjectExtensions>
 </Project>

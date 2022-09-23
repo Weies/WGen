@@ -24,8 +24,8 @@ class Importer {
 public:
 	Importer();
 	// 导入时Windows默认使用GBK编码，所以会自动将文件导入为GBK
-	bool Import(ModelDesc& m, const string& filePath, ll mask = Import_Mask);
-	bool Import(const string& filePath, ModelDesc& m, bool load_texture = true,
+	bool Import(ModelHandle& m, const string& filePath, ll mask = Import_Mask);
+	bool Import(const string& filePath, ModelHandle& m, bool load_texture = true,
 		bool load_meshes = true, bool load_anims = true, bool flip_uv = false) {
 		ll mask = (Triangulate | GenNormals);
 		if (load_texture)mask |= LoadTextures;
@@ -34,6 +34,7 @@ public:
 		if (load_anims)mask |= LoadAnimations;
 		return Import(m, filePath, mask);
 	}
+
 	////直接可读对象，将当前的模型写成dro文件,注意filemName直接填文件名不填路径
 	//void makeDRO(string filemName = "") {
 	//	DROModel m;
@@ -71,7 +72,7 @@ public:
 	//
 	//应该读取.dro文件
 
-	void readDRO(ModelDesc& model, const string& filePath) {
+	void readDRO(ModelHandle& model, const string& filePath) {
 		//m.
 
 		fstream f; f.open(filePath, ios::in | ios::binary);
@@ -122,8 +123,8 @@ public:
 			}
 			auto vbh = SceneBuffer::genVertexBuffer(mVertices);
 			auto ibh = SceneBuffer::genIndexBuffer(mIndices);
-			model.mHandles.push_back({ vbh,ibh });
-			model.mMaterials.push_back(mat);
+
+			model.mMeshHandles.push_back({ vbh,ibh,nullptr });
 		}
 		f.close();
 		//readDROTexture(filePath.substr(0, filePath.find_last_of('.')) + ".drot");

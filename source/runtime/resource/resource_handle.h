@@ -54,24 +54,15 @@ struct SkeletonBindingHandle :public ResourceHandle {
 	}
 };
 
+struct MaterialHandle
+{
+	vec4				mBaseColor{ 1.0,1.0,1.0,1.0 };
+	vec3				mDiffuse{ 1.0,1.0,1.0 };
+	vec3				mSpecular{ 1.0,1.0,1.0 };
+	float				mMetallic{ 0.5f };
+	float				mRoughness{ 0.5f };
+	float				mOcculusion{ 1.0f };
 
-struct MeshHandle {
-	VertexBufferHandle		mVBH;
-	IndexBufferHandle		mIBH;
-	SkeletonBindingHandle	mSBH;
-	bool operator==(const MeshHandle& otr)const {
-		return otr.mVBH == mVBH;
-	}
-	uid hash() const { return mVBH.hash(); }
-};
-template<>
-struct std::hash<MeshHandle> {
-	size_t operator()(const MeshHandle& hd) {
-		return hd.hash();
-	}
-};
-
-struct MaterialHandle {
 	TextureHandle		mBaseColorHandle{ nullptr };
 	TextureHandle		mDiffuseMapHandle{ nullptr };
 	TextureHandle		mSpecularMapHandle{ nullptr };
@@ -86,6 +77,23 @@ struct MaterialHandle {
 	uid hash() const { return mBaseColorHandle.hash(); }
 };
 
+struct MeshHandle {
+	VertexBufferHandle		mVBH;
+	IndexBufferHandle		mIBH;
+	MaterialHandle			mMTH;
+	SkeletonBindingHandle	mSBH;
+	bool operator==(const MeshHandle& otr)const {
+		return otr.mVBH == mVBH;
+	}
+	uid hash() const { return mVBH.hash(); }
+};
+template<>
+struct std::hash<MeshHandle> {
+	size_t operator()(const MeshHandle& hd) {
+		return hd.hash();
+	}
+};
+
 template<>
 struct std::hash<MaterialHandle> {
 	size_t operator()(const MaterialHandle& hd) {
@@ -96,28 +104,20 @@ struct std::hash<MaterialHandle> {
 
 struct ModelHandle;
 
-struct ModelDesc {
-	vector<MeshHandle>		mHandles;
-	vector<MaterialDesc>	mMaterials;
-	bool operator==(const ModelHandle& otr)const;
-	uid hash() const { return mHandles[0].mVBH.hash(); }
-};
+
 
 // one mesh handle must have one material handle
-struct ModelHandle {
-	ModelHandle() = default;
-	ModelHandle(ModelDesc&& desc) :mHandles(move(desc.mHandles)) {}
-	vector<MeshHandle>		mHandles;
-	vector<MaterialHandle>	mMaterials;
-	bool operator==(const ModelHandle& otr)const {
-		return otr.mHandles == mHandles;
-	}
+struct ModelHandle
+{
+	vector<MeshHandle>		mMeshHandles;
 
-	uid hash() const { return mHandles[0].mVBH.hash(); }
+	ModelHandle() = default;
+
+	bool operator==(const ModelHandle& otr)const {
+		return otr.mMeshHandles == mMeshHandles;
+	}
+	uid hash() const { return mMeshHandles[0].mVBH.hash(); }
 };
-inline bool ModelDesc::operator==(const ModelHandle& otr)const {
-	return otr.mHandles == mHandles;
-}
 
 template<>
 struct std::hash<ModelHandle> {

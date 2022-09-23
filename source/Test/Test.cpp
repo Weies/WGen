@@ -13,6 +13,8 @@ int main()
 
 		ptr3.drawCoordinate();
 		ptr.drawCircle(300, 300, 200);
+
+		//SceneManager::get().
 		Engine::get().tick(frameTime);
 
 

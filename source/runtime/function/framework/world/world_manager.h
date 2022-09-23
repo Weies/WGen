@@ -11,6 +11,21 @@ public:
 		}
 	}
 
+	const unordered_map<uint, GObject*>&  getAllObjects()
+	{
+		return mCurLevel->mGObjects;
+	}
+
+	GObject* getGOById(uint id)
+	{
+		return mCurLevel->getGOById(id);
+	}
+
+	GObject* getGOByName(const string& name)
+	{
+		return nullptr;//mCurLevel->getGOById(id);
+	}
+
 	void clear() {
 		for (auto& v : mLevels) {
 			delete v;

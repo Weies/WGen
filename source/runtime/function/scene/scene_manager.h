@@ -18,36 +18,19 @@ public:
 	unordered_map<string, ModelHandle>		mModelHandleMap;
 	shared_ptr<Scene>						mScene;
 
-	MeshHandle getMeshHandle(const string& mesh_file) {
-		auto it = mMeshHandleMap.find(mesh_file);
-		if (it != mMeshHandleMap.end())
-		{
-			return it->second;
-		}
-		MeshHandle hand = SceneBuilder::loadMesh(mesh_file);
-		mMeshHandleMap.insert({ mesh_file,hand });
-		return hand;
-	}
-	ModelHandle getModelHandle(const GameObjectDesc& desc) {
-		auto it = mModelHandleMap.find(desc.mMeshFile);
+
+
+	ModelHandle getModelHandle(const ModelDesc& desc) {
+		auto it = mModelHandleMap.find(desc.mModelFile);
 		if (it != mModelHandleMap.end()) {
 			return it->second;
 		}
-		ModelDesc hd = SceneBuilder::loadModel(desc);
+
 		/*string s = desc.mMeshFile;
 		string dir(s.begin(), s.begin() + s.find_last_of('/') + 1);*/
-		ModelHandle hand(move(hd));
-		for (int i = 0; i < hd.mMaterials.size(); ++i) {
-			MaterialHandle mhand;
-			/*mhand.mBaseColorHandle = getTextureHandle(hd.mMaterials[i].mBaseColorFile);
-			mhand.mSpecularMapHandle = getTextureHandle(hd.mMaterials[i].mSpecularMapFile);
-			mhand.mDiffuseMapHandle = getTextureHandle(hd.mMaterials[i].mDiffuseMapFile);
-			mhand.mOcculusionMapHandle = getTextureHandle(hd.mMaterials[i].mOcculusionMapFile);
-			mhand.mMetallicMapHandle = getTextureHandle(hd.mMaterials[i].mMetallicMapFile);
-			mhand.mRoughnessMapHandle = getTextureHandle(hd.mMaterials[i].mRoughnessMapFile);*/
-			hand.mMaterials.push_back(mhand);
-		}
-		mModelHandleMap.insert({ desc.mMeshFile,hand });
+		ModelHandle hand = SceneBuilder::loadModel(desc);
+
+		mModelHandleMap.insert({ desc.mModelFile,hand });
 		return hand;
 	}
 
@@ -73,49 +56,36 @@ public:
 		mGODescs.push_back(move(go_desc));
 	}
 	//将mGODesc中的描述符加载成RenderModel放到Scene中
-	void syncObejct() {
+	void syncObejct()
+	{
 		mScene->clear();
-		for (auto& go : mGODescs) {
-			RenderModel model;
-			ModelHandle mhd = getModelHandle(go);
-			const uint sz = mhd.mHandles.size();
+		for (auto& go_desc : mGODescs) {
+			RenderModel render_model;
 
+			ModelHandle model_handle = getModelHandle(go_desc.mModelDesc);
+
+			const uint mesh_size = model_handle.mMeshHandles.size();
+			render_model.mMeshes.resize(mesh_size);
+
+			for (uint i = 0; i < mesh_size; ++i)
 			{
-				go.mCompDescs.resize(sz);
+				auto& render_mesh = render_model.mMeshes[i];
+
+				render_mesh.mVBH = model_handle.mMeshHandles[i].mVBH;
+				render_mesh.mIBH = model_handle.mMeshHandles[i].mIBH;
+				render_mesh.mMaterial = model_handle.mMeshHandles[i].mMTH;
+
 			}
 
-			model.mMeshes.resize(sz);
-
-			for (uint i = 0; i < sz; ++i) {
-				model.mMeshes[i].mVBH = mhd.mHandles[i].mVBH;
-				model.mMeshes[i].mIBH = mhd.mHandles[i].mIBH;
-				auto& desc = go.mCompDescs[i].mMaterialDesc;
-				auto& mate = model.mMeshes[i].mMaterial;
-				auto& mat = mhd.mMaterials[i];
-
-				mate.mBaseColor = desc.mBaseColor;
-				mate.mDiffuse = desc.mDiffuse;
-				mate.mSpecular = desc.mSpecular;
-				mate.mMetallic = desc.mMetallic;
-				mate.mRoughness = desc.mRoughness;
-				mate.mOcculusion = desc.mOcculusion;
-
-				mate.mBaseColorHandle = mat.mBaseColorHandle;
-				mate.mDiffuseMapHandle = mat.mDiffuseMapHandle;
-				mate.mSpecularMapHandle = mat.mSpecularMapHandle;
-				mate.mMetallicMapHandle = mat.mMetallicMapHandle;
-				mate.mRoughnessMapHandle = mat.mRoughnessMapHandle;
-				mate.mOcculusionMapHandle = mat.mOcculusionMapHandle;
-			}
-
-			if (go.mHasAnim) {
+			if (go_desc.mHasAnim)
+			{
 				/*mat4* p = model.mJointMat;
 				for (const auto& sqt : go.mPose.mPoses)
 					*p++ = sqt.mat4();
 				model.mNumJoints = go.mPose.mNumJoints;*/
 			}
-			model.mModelTransform = go.mModelTransform;
-			mScene->addModel(model);
+			render_model.mModelTransform = go_desc.mModelTransform;
+			mScene->addModel(render_model);
 		}
 		mGODescs.clear();
 	}

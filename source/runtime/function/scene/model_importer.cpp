@@ -7,6 +7,7 @@
 #include "assimp/scene.h"
 #include "assimp/postprocess.h"
 #include "model_importer.h"
+#include "resource/resource_handle.h"
 
 //void tralMesh(aiMesh* mesh, const aiScene* scene) {
 //	debug << "Mesh at 0x" << mesh << " has: " << endl
@@ -59,7 +60,7 @@ void getTextureFile(string& name, aiMaterial* mat, TextureType tex_type) {
 }
 
 
-void processMesh(ModelDesc& m, aiMesh* mesh, const aiScene* scene, map<string, int>& bone_id, ll mask)
+void processMesh(ModelHandle& m, aiMesh* mesh, const aiScene* scene, map<string, int>& bone_id, ll mask)
 {
 	vector<vertex> vertices; vector<uint> indices; vector<Texture*> textures;
 
@@ -149,12 +150,11 @@ void processMesh(ModelDesc& m, aiMesh* mesh, const aiScene* scene, map<string, i
 	material->GetTexture(cast(aiTextureType, texture_base_color), 0, &str);
 	desc.mBaseColorFile = Encoder::getGBK(str.C_Str());
 
-	m.mHandles.push_back(SceneBuilder::buildMesh(vertices, indices));
-	m.mMaterials.push_back(desc);
-
+	m.mMeshHandles.push_back(SceneBuilder::buildMesh(vertices, indices));
+	m.mMeshHandles.back().mMTH = SceneBuilder::loadMaterial(desc);
 }
 
-void processNode(ModelDesc& m, aiNode* node, const aiScene* scene, map<string, int>& bone_id, ll mask)
+void processNode(ModelHandle& m, aiNode* node, const aiScene* scene, map<string, int>& bone_id, ll mask)
 {
 	for (unsigned int i = 0; i < node->mNumMeshes; i++)
 	{
@@ -219,7 +219,7 @@ void processNode(ModelDesc& m, aiNode* node, const aiScene* scene, map<string, i
 
 Importer::Importer() :hand(0), imp(new Assimp::Importer) {}
 
-bool Importer::Import(ModelDesc& m, const string& path, ll mask) {
+bool Importer::Import(ModelHandle& m, const string& path, ll mask) {
 	if (hand)delete (aiScene*)hand;
 	//if (imp)((Assimp::Importer*)imp)->FreeScene();
 	//m.clear();

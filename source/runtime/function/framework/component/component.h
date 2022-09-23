@@ -1,6 +1,6 @@
 #pragma once
 #include"function/base/base_include.h"
-#include"core/core.h"
+#include"resource/json_helper.h"
 
 class GObject;
 class ComponentHelper;

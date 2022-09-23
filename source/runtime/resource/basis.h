@@ -72,10 +72,7 @@ public:
 
 
 using Transform = SQT;
-class MeshDesc {
-public:
-	string mMeshName;
-};
+
 class MaterialDesc {
 public:
 	vec4	mBaseColor{ 1.0,1.0,1.0,1.0 };
@@ -93,10 +90,7 @@ public:
 	string	mRoughnessMapFile;
 	string	mOcculusionMapFile;
 };
-class TransformDesc {
-public:
-	Transform mTransform;
-};
+
 class SkeletonBindingDesc {
 public:
 
@@ -106,11 +100,18 @@ public:
 
 };
 
-class MeshCompDesc {
+class MeshDesc {
 public:
-	MeshDesc			mMeshDesc;
-	MaterialDesc		mMaterialDesc;
-	TransformDesc		mTransDesc;
+	string				mMeshName;
+	Transform			mTransform;
+	MaterialDesc		mMaterialDescs;
+};
+
+struct ModelDesc {
+
+	string					mModelFile;
+	vector<MeshDesc>		mMeshDescs;
+
 };
 
 
@@ -118,8 +119,7 @@ class GameObjectDesc {
 public:
 	uid						mGOID;
 	string					mName;
-	string					mMeshFile;
-	vector<MeshCompDesc>	mCompDescs;
+	ModelDesc				mModelDesc;
 	mat4					mModelTransform;
 	bool					mHasAnim{ false };
 	//Pose mPose;

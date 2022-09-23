@@ -4,7 +4,7 @@
 #include"../component/component.h"
 #include"../component/animation.h"
 #include"../component/mesh.h"
-#include"core/core.h"
+#include"resource/json_helper.h"
 
 #define INVAILID_ID
 class GObject {

@@ -5,16 +5,11 @@
   "Components": [
     {
       "Type": "Mesh",
-      "Ref": "asset/models/key.obj",
+      "Ref": "asset/models/yuan/ying/ying.fbx",
       "Meshes": [
         {
-          "MeshDesc": {
-            "MeshName": "Main"
-          },
-          "MaterialDesc": {
-
-          },
-          "TransformDesc": {
+          "MeshName": "Main",
+          "Transform": {
             "Translate": {
               "x": 0,
               "y": 0,
@@ -30,6 +25,9 @@
               "y": 0,
               "z": 0
             }
+          },
+          "MaterialDesc": {
+            "BaseColorFile": "asset/imgs/sky.jpg"
           }
         }
       ]

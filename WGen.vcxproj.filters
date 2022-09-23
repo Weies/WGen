@@ -359,6 +359,9 @@
     <ClInclude Include="source\runtime\Engine.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="source\runtime\resource\json_helper.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="source\shader\pbr.shader" />

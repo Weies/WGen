@@ -23,7 +23,9 @@ public:
 		for (auto& mesh : m.mMeshes) {
 			SceneBuffer::memory(mesh.mVBH)->bind();
 			SceneBuffer::memory(mesh.mIBH)->bind();
+
 			int bind_tex = 1; const auto& mate = mesh.mMaterial;
+
 			if (mate.mBaseColorHandle.mHandle) {
 				glActiveTexture(GL_TEXTURE0 + bind_tex);
 				SceneBuffer::memory(mate.mBaseColorHandle)->bind();

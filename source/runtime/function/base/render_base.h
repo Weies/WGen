@@ -12,36 +12,6 @@ enum class RenderStrategy {
 };
 
 
-class RenderMaterial {
-public:
-	vec4				mBaseColor{ 1.0,1.0,1.0,1.0 };
-	vec3				mDiffuse{ 1.0,1.0,1.0 };
-	vec3				mSpecular{ 1.0,1.0,1.0 };
-	float				mMetallic{ 0.5f };
-	float				mRoughness{ 0.5f };
-	float				mOcculusion{ 1.0f };
-	bool operator==(const RenderMaterial& otr)const {
-		return otr.mBaseColorHandle == mBaseColorHandle;
-	}
-	//base color will be treat as albedo
-	TextureHandle		mBaseColorHandle;
-
-	TextureHandle		mDiffuseMapHandle;
-
-	TextureHandle		mSpecularMapHandle;
-
-	TextureHandle		mNormalMapHandle;
-
-	TextureHandle		mMetallicMapHandle;
-
-	TextureHandle		mRoughnessMapHandle;
-
-	TextureHandle		mOcculusionMapHandle;
-};
-
-
-
-
 #define MAX_JOINT_COUNT 64
 
 class RenderMesh {
@@ -51,7 +21,7 @@ public:
 	SkeletonBindingHandle	mSBH;
 	VertexBufferHandle		mVBH;
 	IndexBufferHandle		mIBH;
-	RenderMaterial			mMaterial;
+	MaterialHandle			mMaterial;
 };
 
 class RenderModel {

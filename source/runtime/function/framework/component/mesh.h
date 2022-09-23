@@ -8,7 +8,7 @@
 
 class MeshComponent :public Component {
 public:
-	vector<MeshCompDesc>	mRawMeshes;
+	vector<MeshDesc>	mRawMeshes;
 	string					mMeshFile;
 
 	RegisterComponent(Mesh);

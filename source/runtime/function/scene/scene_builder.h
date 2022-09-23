@@ -4,77 +4,115 @@
 
 
 //SceneBuilder 一定会分配新内存，但是SceneManager可能不分配新内存
+//Build scene的两种方式：从文件生成 vs. 代码直接生成
 class SceneBuilder {
 public:
 	static Importer imp;
 
-	static MeshHandle loadMesh(const string& mesh_file) {
-		if (mesh_file.empty())return MeshHandle{};
-		if (mesh_file[0] == '[') {
-			//const char* p = &mesh_file[1];
-			int p = mesh_file.find('{');
-			string ob = string(mesh_file.begin() + 1, mesh_file.begin() + p);
-
-		}
-		return MeshHandle();
-	}
 
 
+	static ModelHandle loadModel(const ModelDesc& desc) {
+		auto& model_file = desc.mModelFile;
+		ModelHandle model_handle;
+		if (model_file.empty())return model_handle;
 
-	static ModelDesc loadModel(const GameObjectDesc& desc) {
-		auto& model_file = desc.mMeshFile;
-		ModelDesc ret;
-		if (model_file.empty())return ret;
+
 		/*预定义对象，直接用代码生成*///[Sphere{36}]
+		if (model_file[0] == '[')
+		{
+			//const char* p = &mesh_file[1];
+			int p = model_file.find('{');
+			string ob = string(model_file.begin() + 1, model_file.begin() + p);
+			if (ob == "Sphere") {
+				int seg = stoi(model_file.substr(p + 5));
+				MeshHandle mesh_handle = buildSphere(seg);
+
+
+				//model_handle.mMeshHandles[0].
+				if (desc.mMeshDescs.size() != 0)
+					mesh_handle.mMTH = loadMaterial(desc.mMeshDescs[0].mMaterialDescs);
+
+				model_handle.mMeshHandles.push_back(mesh_handle);
+				return model_handle;
+			}
+
+			return ModelHandle{};
+		}
+
+
+
+		/*从文件中加载模型*/
+
+		if (model_file.substr(model_file.find_last_of('.') + 1) == "dro")
+		{
+			imp.readDRO(model_handle, model_file);
+		}
+		else imp.Import(model_handle, model_file);
+
+		if (model_handle.mMeshHandles.size() != desc.mMeshDescs.size())
+		{
+			model_handle.mMeshHandles.resize(desc.mMeshDescs.size());
+		}
+
+		for (int i = 0; i < model_handle.mMeshHandles.size(); ++i)
+		{
+			model_handle.mMeshHandles[i].mMTH = loadMaterial(desc.mMeshDescs[i].mMaterialDescs);
+		}
+
+		return model_handle;
+	}
+
+	static ModelHandle loadModel(const string& model_file)
+	{
+
+		if (model_file.empty())return ModelHandle();
+
 		if (model_file[0] == '[') {
 			//const char* p = &mesh_file[1];
 			int p = model_file.find('{');
 			string ob = string(model_file.begin() + 1, model_file.begin() + p);
 			if (ob == "Sphere") {
 				int seg = stoi(model_file.substr(p + 5));
-				ret.mHandles.push_back(buildSphere(seg));
-				if (desc.mCompDescs.size() != 0)
-					ret.mMaterials.push_back(desc.mCompDescs[0].mMaterialDesc);
-				else ret.mMaterials.push_back({});
-				return ret;
-			}
-			return ModelDesc{};
+				MeshHandle hand = buildSphere(seg);
+				return ModelHandle{ {hand} };
+			};
 		}
-		string s = desc.mMeshFile;
-
-		/*从文件中加载模型*/
-
-		if (s.substr(s.find_last_of('.') + 1) == "dro") {
-			imp.readDRO(ret, s);
-		}
-		else imp.Import(ret, desc.mMeshFile);
-		return ret;
+		return ModelHandle{};
 	}
 
-	static ModelDesc loadModel(const string& model_file) {
-		if (model_file.empty())return ModelDesc();
-		if (model_file[0] == '[') {
-			//const char* p = &mesh_file[1];
-			int p = model_file.find('{');
-			string ob = string(model_file.begin() + 1, model_file.begin() + p);
-			if (ob == "Sphere") {
-				int seg = stoi(model_file.substr(p + 5));
-				auto hand = buildSphere(seg);
-				return ModelDesc{ {hand},{MaterialDesc()} };
-			}
-			return ModelDesc{};
-		}
 
-		/*从文件中加载模型*/
-	}
 
-	static TextureHandle loadTexture(const string& texture_file) {
+	static TextureHandle loadTexture(const string& texture_file)
+	{
+		if (texture_file.empty())return {};
+
 		Image img;
 		img.load(texture_file);
 		TextureHandle hand = SceneBuffer::genTextureBuffer(img);
 		img.free();
 		return hand;
 	}
+
+	static MaterialHandle loadMaterial(const MaterialDesc& mat_desc)
+	{
+		MaterialHandle handle;
+		handle.mBaseColor = mat_desc.mBaseColor;
+		handle.mDiffuse = mat_desc.mDiffuse;
+		handle.mSpecular = mat_desc.mSpecular;
+		handle.mMetallic = mat_desc.mMetallic;
+		handle.mRoughness = mat_desc.mRoughness;
+		handle.mOcculusion = mat_desc.mOcculusion;
+
+		handle.mBaseColorHandle = loadTexture(mat_desc.mBaseColorFile);
+		handle.mSpecularMapHandle = loadTexture(mat_desc.mSpecularMapFile);
+		handle.mDiffuseMapHandle = loadTexture(mat_desc.mDiffuseMapFile);
+		handle.mOcculusionMapHandle = loadTexture(mat_desc.mOcculusionMapFile);
+		handle.mMetallicMapHandle = loadTexture(mat_desc.mMetallicMapFile);
+		handle.mRoughnessMapHandle = loadTexture(mat_desc.mRoughnessMapFile);
+
+		return handle;
+	}
+
 	static TextureHandle loadCubeMap(const string& directory, const string  path[6]) {
 		int mTarget = GL_TEXTURE_CUBE_MAP; uint mId;
 		glGenTextures(1, &mId);
@@ -96,16 +134,21 @@ public:
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
 		return TextureHandle{ mem };
 	}
-	static MeshHandle buildMesh(const vector<vertex>& vt, const vector<uint> id) {
+
+	static MeshHandle buildMesh(const vector<vertex>& vt, const vector<uint> id)
+	{
 		MeshHandle hand;
 		hand.mVBH = SceneBuffer::genVertexBuffer(vt);
 		hand.mIBH = SceneBuffer::genIndexBuffer(id);
 		return hand;
 	}
+
 	//private:
-	static MeshHandle buildSphere(int seg = 36) {
+	static MeshHandle buildSphere(int seg = 36)
+	{
 		vector<vertex> vt; vector<uint> id;
 		vt.reserve((seg + 1) * (seg + 1) / 2 + 10);
 		id.reserve((seg + 1) * (seg + 1) + 10);
@@ -138,7 +181,8 @@ public:
 		return buildMesh(vt, id);
 	}
 
-	static vector<MeshHandle> buildCube() {
+	static vector<MeshHandle> buildCube()
+	{
 		static float data[] = {
 			// positions          // normals           //texCoords
 			 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,   0.0, 1.0,//back
@@ -190,7 +234,8 @@ public:
 		return ret;
 	}
 
-	static MeshHandle buildSkyBox() {
+	static MeshHandle buildSkyBox()
+	{
 		static float data[] = {
 			// positions
 			-0.5f,  0.5f, -0.5f,
@@ -213,3 +258,5 @@ public:
 	}
 
 };
+
+
