@@ -30,5 +30,6 @@ uniform vec4 base_color;
 
 out vec4 color;
 void main() {
-	color = base_color + texture(tex_base_color, texCoord);
+	//color = base_color + texture(tex_base_color, texCoord);
+	color = vec4(1.0, 0, 0, 1.0);
 }
