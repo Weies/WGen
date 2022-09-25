@@ -1,6 +1,6 @@
 #pragma once
 #include"scene_buffer.h"
-#include"model_importer.h"
+#include"function/importer/Importer.h"
 
 
 //SceneBuilder 一定会分配新内存，但是SceneManager可能不分配新内存
@@ -8,8 +8,6 @@
 class SceneBuilder {
 public:
 	static Importer imp;
-
-
 
 	static ModelHandle loadModel(const ModelDesc& desc) {
 		auto& model_file = desc.mModelFile;
@@ -43,11 +41,11 @@ public:
 
 		/*从文件中加载模型*/
 
-		if (model_file.substr(model_file.find_last_of('.') + 1) == "dro")
-		{
-			imp.readDRO(model_handle, model_file);
-		}
-		else imp.Import(model_handle, model_file);
+		//if (model_file.substr(model_file.find_last_of('.') + 1) == "dro")
+		//{
+		//	//imp.readDRO(model_handle, model_file);
+		//}
+		//else imp.Import(model_handle, model_file);
 
 		if (model_handle.mMeshHandles.size() != desc.mMeshDescs.size())
 		{

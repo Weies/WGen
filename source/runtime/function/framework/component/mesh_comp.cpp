@@ -2,7 +2,7 @@
 #include"component.h"
 #include"function/base/render_base.h"
 #include"../object/GObject.h"
-#include"animation.h"
+#include"animation_comp.h"
 #include"function/scene/scene_manager.h"
 
 

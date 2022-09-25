@@ -2,8 +2,8 @@
 #include"core/base/basis.h"
 #include<unordered_set>
 #include"../component/component.h"
-#include"../component/animation.h"
-#include"../component/mesh.h"
+#include"../component/animation_comp.h"
+#include"../component/mesh_comp.h"
 #include"resource/json_helper.h"
 
 #define INVAILID_ID

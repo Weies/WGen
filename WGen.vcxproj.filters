@@ -63,22 +63,28 @@
     <ClCompile Include="source\runtime\function\render\render.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="source\runtime\function\scene\model_importer.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="source\Test\Test.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="source\runtime\function\model\render_mseh.cpp">
+    <ClCompile Include="source\z_old_version\new\render_mseh.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="source\runtime\function\model\triangleMesh.cpp">
+    <ClCompile Include="source\z_old_version\new\triangleMesh.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="source\runtime\function\network\network.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="source\runtime\function\framework\component\mesh.cpp">
+    <ClCompile Include="source\runtime\function\framework\component\mesh_comp.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="source\runtime\function\importer\Importer.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="source\runtime\function\importer\mesh.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="source\z_old_version\new\model_importer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -299,10 +305,10 @@
     <ClInclude Include="source\runtime\core\core.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="source\runtime\function\framework\component\animation.h">
+    <ClInclude Include="source\runtime\function\framework\component\animation_comp.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="source\runtime\function\framework\component\mesh.h">
+    <ClInclude Include="source\runtime\function\framework\component\mesh_comp.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="source\runtime\function\render\render.h">
@@ -318,9 +324,6 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="source\runtime\function\framework\object\std_gobjects.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="source\runtime\function\scene\model_importer.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="source\runtime\core\math\angle.h">
@@ -347,10 +350,10 @@
     <ClInclude Include="source\runtime\function\model\model_include.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="source\runtime\function\model\render_mesh.h">
+    <ClInclude Include="source\z_old_version\new\render_mesh.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="source\runtime\function\model\triangleMesh.h">
+    <ClInclude Include="source\z_old_version\new\triangleMesh.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="source\runtime\function\network\network.h">
@@ -360,6 +363,15 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="source\runtime\resource\json_helper.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="source\runtime\function\importer\Importer.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="source\runtime\function\importer\mesh.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="source\z_old_version\new\model_importer.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

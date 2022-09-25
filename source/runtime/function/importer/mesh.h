@@ -1,135 +1,362 @@
 #pragma once
-#include"triangleMesh.h"
-#include"../physics/collision_dectect.h"
-#include"../ui/font.h"
-#include"../ui/painter.h"
-#include "function/render/texture.h"
 
+#include"../base/global_values.h"
+#include"../event/events.h"
+#include"../animation/animation.h"
+#include"../physics/collision_dectect.h"
+
+#include"function/render/texture.h"
+#include<fstream>
+#include<array>
+using namespace globals;
+
+
+using pt = point<float>;
+
+#define IS_BORDER 0
 #define TEXTURE_COORD	0
 #define SPHERE_COORD	1
 #define CUBIC_COORD		2
 
-class StaticObject :public Mesh {
+/*--------------------------------------------*/
+//Warning: 写到文件的结构不要随意更改数据出现的顺序
+/*--------------------------------------------*/
+
+//三角面片，由多个三角形组成
+class MeshPatch
+{
 public:
-	StaticObject() :mModelTransform(SQT()), mColor(1.0, 1.0, 1.0, 1.0), mColliBody(Colli_None, mModelTransform) {}
-	void setModel(const mat4& m) {
-		mModelTransform = m;
-	}
-	void setModel(const SQT& sqt) {
-		mModelTransform = sqt;
-	}
-	vec3 p() {
-		return mModelTransform.p;
-	}
-	virtual void tranform(const SQT& s) {
-		mModelTransform = mModelTransform * s;
-	}
-	virtual void translate(float x, float y, float z) {
-		mModelTransform.t = mModelTransform.t + mModelTransform.s * mModelTransform.q.rotate({ x,y,z });
-	}
-	virtual void translate(vec3 v) {
-		mModelTransform.t = mModelTransform.t + mModelTransform.s * mModelTransform.q.rotate(v);
-	}
-	virtual void moveto(const vec3& pos) {
-		mModelTransform.t = pos;
-	}
-	virtual void scale(float x, float y, float z) {
-		scale(vec3(x, y, z));
-	}
-	virtual void scale(const vec3& v) {
+	string				mName;
+	vector<vertex>      mVertices;//顶点表
+	vector<uint>		mIndices;//索引表
+	vector<Texture*>	mTextures;//纹理表
+	Transform			mTransform;
 
-		mModelTransform.s *= v;
+	void addTexture(Texture& tex) {
+		mTextures.push_back(&tex);
 	}
-	virtual void scale(float s) {
-		mModelTransform.s *= s;
-	}
-	virtual void rotate(Degree degree, vec3 axis) {
-		mModelTransform.q = mModelTransform.q * qua(axis, degree, true);
-	}
-	virtual void setColor(const vec4& co) {
-		mColor = co;
-	}
-	virtual void setColor(const Color& co) {
-		mColor = co.vec4();
-	}
-	virtual void setColor(float r, float g, float b, float a = 1.0f) {
-		mColor = Color(r, g, b, a).vec4();
+	void resetData();
+	bool empty() const {
+		return mVertices.size() == 0;
 	}
 
-	virtual CDResult ColliDetect(const StaticObject& o)const {
-		return mColliBody.detect(o.mColliBody);
-	}
-	virtual vec3 frontv() {
-		return mModelTransform.q.rotate(vec3(0, 0, 1));
-	}
-	virtual vec3 leftv() {
-		return mModelTransform.q.rotate(vec3(1, 0, 0));
+	bool hasTexture() const {
+		return mTextures.size() != 0;
 	}
 
-	void setCoordType(int texture_mTexCoordType) {
-		mTexCoordType = texture_mTexCoordType;
+	MeshPatch() {}
+
+	MeshPatch(vector<vertex>& mVertices, vector<uint>& mIndices, vector<Texture*>& mTextures, bool post_process = false)
+	{
+		parseVector(mVertices, mIndices, mTextures, post_process);
 	}
-	void drawColliBody()const {
-		mColliBody.applyModel();
-		if (mColliBody.mType == Colli_Cube)
-			ptr3.drawCube(mColliBody.body<cube>());
-		ef(mColliBody.mType == Colli_Ball) {
-			ptr3.drawSphere(mColliBody.body<ball>());
+
+	void parseVector(vector<vertex>& mVertices, vector<us>& mIndices, vector<Texture*>& mTextures, bool post_process = false) {
+		clear();
+		this->mVertices.swap(mVertices);
+		this->mIndices.swap(mIndices);
+		this->mTextures.swap(mTextures);
+	}
+
+	void parseOFF(const string& filePath, bool post_process = false) {
+		clear();
+		FILE* f = fopen(filePath.c_str(), "r");
+		if (f == 0)excep(WERROR_FILE_LOAD, "Failed to open file : " + filePath);
+		char c[100] = {};
+		fscanf(f, "%s", c);
+		int Vnum, Fnum; float x, y, z;
+		fscanf(f, "%d%d%f", &Vnum, &Fnum, &x);
+		while (Vnum--)
+		{
+			fscanf_s(f, "%f%f%f", &x, &y, &z);
+			mVertices.push_back(vertex(x, y, z));
 		}
+		calcuNormal(false);
+		fclose(f);
+
 	}
-	vec4 mColor;
-	SQT mModelTransform;
-	mutable ColliBody mColliBody;
-	int mTexCoordType = TEXTURE_COORD;
+
+	void parseArray(float* mVertices, int num_vertex, uint* mIndices, int num_face) {
+		clear();
+		float* v = mVertices;
+		for (int i = 0; i < num_vertex; ++i) {
+			this->mVertices.push_back(vertex(v[i * 3], v[i * 3 + 1], v[i * 3 + 2]));
+		}
+		this->mIndices = vector<uint>(mIndices, mIndices + num_face * 3);
+
+		calcuNormal();
+	}
+
+	void parseArray(float* mVertices, int num_vertex) {
+		clear();
+		float* v = mVertices;
+		for (int i = 0; i < num_vertex; ++i) {
+			this->mVertices.push_back(vertex(v[i * 3], v[i * 3 + 1], v[i * 3 + 2]));
+			this->mIndices.push_back(i);
+		}
+
+		calcuNormal();
+	}
+
+	//data每一个顶点的格式应该是[ vec3 pos, vec3 normal , vec2 texcoord ]
+	void parseData(const float* data, int num_vtx, const uint* mIndices, int num_ids) {
+		clear();
+		const float* p = data;
+		for (int i = 0; i < num_vtx; ++i, p += 8) {
+			vertex vt(p, p + 3, p + 6);
+			mVertices.push_back(vt);
+		}
+		this->mIndices.assign(mIndices, mIndices + num_ids);
+		auto& id = this->mIndices;
+	}
+
+
+
+	void swap(MeshPatch& otr) {
+		mVertices.swap(otr.mVertices);
+		mIndices.swap(otr.mIndices);
+		mTextures.swap(otr.mTextures);
+		mName.swap(otr.mName);
+	}
+
+	void clear() {
+		mVertices.clear(); mIndices.clear(); mTextures.clear();
+	}
+
+	//计算顶点的法向量
+	void calcuNormal(bool flip_normal = false, bool sync = false);
+
+	void calcuTB() {
+		auto& vt = mVertices;
+		for (int i = 0; i < mIndices.size(); i += 3) {
+			us v1 = mIndices[i]; us v2 = mIndices[i + 1]; us v3 = mIndices[i + 2];
+			float u1 = vt[v3].mTexCoord.x - vt[v1].mTexCoord.x;
+			float w1 = vt[v3].mTexCoord.y - vt[v1].mTexCoord.y;
+			float u2 = vt[v2].mTexCoord.x - vt[v1].mTexCoord.x;
+			float w2 = vt[v2].mTexCoord.y - vt[v1].mTexCoord.y;
+			float d = u1 * w2 - u2 * w1;
+			vec4 v;
+			v.x = w2 / d; v.y = -u2 / d; v.z = -w1 / d; v.w = u1 / d;
+			u1 = v.x; w1 = v.y; u2 = v.z; w2 = v.w;
+			vec3 p = vt[v3].mPosition - vt[v1].mPosition; vec3 q = vt[v2].mPosition - vt[v1].mPosition;
+			vec3 t(u1 * p.x + w1 * q.x, u1 * p.y + w1 * q.y, u1 * p.z + w1 * q.z);
+			vec3 b(u2 * p.x + w2 * q.x, u2 * p.y + w2 * q.y, u2 * p.z + w2 * q.z);
+			t = normalize(t); b = normalize(b);
+			vt[v1].mTangent = t; vt[v1].mBitangent = b;
+			vt[v2].mTangent = t; vt[v2].mBitangent = b;
+			vt[v3].mTangent = t; vt[v3].mBitangent = b;
+		}
+		resetData();
+	}
+protected:
+
+	ll hash(ll a, ll b) {
+		return a * b * 6170729 + (a + b) * 1254745 + 51155471 * (a * a + b * b) + a * 158547 / (b + 8131657) + b * 158547 / (a + 8131657);
+	}
+
 };
 
-class SkeletonObject :public StaticObject {
+//网格模型，由多个三角面片组成
+class Mesh
+{
 public:
+	Array<Texture, 100>		mTextures;
+	vector<MeshPatch>		mMeshes;
+	string					mDirectory;//文件目录
+	string					mName;//文件名
+	Transform				mTransform;
+	bool					mIsGammaCorection = false;
+
+
+
+	Mesh() {}
+	virtual ~Mesh() {
+		for (int i = 0; i < mTextures.size(); ++i) {
+			glDeleteTextures(1, &mTextures[i].mId);
+		}
+	}
+
+	string format() {
+		size_t p = mName.find_last_of('.');
+		if (p != string::npos)return mName.substr(p + 1);
+		return "Unknown";
+	}
+
+	bool hasTexture() const {
+		return mTextures.size() > 0;
+	}
+
+	//to_whom 表示对谁添加纹理，-1对所有面片，0~i,表示对某一个面片,大于mMeshes的大小时，对最后一个添加
+	void addTexture(const string& path, TextureType tp, int to_whom);
+	void addTexture(const Texture& tex, int to_whom);
+
+	virtual void clear() {
+		mMeshes.resize(0);
+		mTextures.resize(0);
+		mDirectory = ""; mName = "";
+	}
+
+	void scaleTexture(int which = -1, float s = 1.0) {
+		s = 1 / s;
+		for (int i = 0; i < mMeshes.size(); ++i) {
+			if (which != -1 && which != i)continue;
+			auto& v = mMeshes[i].mVertices;
+			for (auto& y : v) {
+				y.mTexCoord *= s;
+			}
+		}
+	}
+	void scaleTexture(int which = -1, vec2 s = 1.0) {
+		s = vec2(1 / s.x, 1 / s.y);
+		for (int i = 0; i < mMeshes.size(); ++i) {
+			if (which != -1 && which != i)continue;
+			auto& v = mMeshes[i].mVertices;
+			for (auto& y : v) {
+				y.mTexCoord *= s;
+			}
+		}
+	}
+
+	void putToOrigin() {
+		vec3 cen(0.0f); int total = 0;
+		for (int i = 0; i < mMeshes.size(); ++i) {
+			auto& v = mMeshes[i].mVertices; total += v.size();
+			for (int j = 0; j < v.size(); ++j) {
+				cen += v[j].mPosition;
+			}
+		}
+		cen /= total;
+		for (int i = 0; i < mMeshes.size(); ++i) {
+			auto& v = mMeshes[i].mVertices;
+			for (int j = 0; j < v.size(); ++j) {
+				v[j].mPosition -= cen;
+			}
+			mMeshes[i].resetData();
+		}
+	}
+	void rotateOnVertex(qua q) {
+		for (int i = 0; i < mMeshes.size(); ++i) {
+			auto& v = mMeshes[i].mVertices;
+			for (int j = 0; j < v.size(); ++j) {
+				v[j].mPosition = q.rotate(v[j].mPosition);
+			}
+			mMeshes[i].resetData();
+		}
+	}
+	int queryTexture(const string& mName) {
+		for (int i = 0; i < mTextures.size(); ++i) {
+			if (mTextures[i].mName == mName)return i;
+		}
+		return -1;
+	}
+
+	void pushMesh(MeshPatch& mesh) {
+		mMeshes.resize(mMeshes.size() + 1);
+		mMeshes.back().swap(mesh);
+	}
+
+	virtual void swap(Mesh& m) {
+		mDirectory.swap(m.mDirectory);
+		mName.swap(m.mName);
+		mTextures.swap(m.mTextures);
+		mMeshes.swap(m.mMeshes);
+		std::swap(mIsGammaCorection, m.mIsGammaCorection);
+	}
+	void loadTextures() {
+		for (int i = 0; i < mTextures.size(); ++i) {
+			Image img(mDirectory + '/' + mTextures[i].mName);
+			mTextures[i].setData(img);
+		}
+	}
+
+	void calcuNormal(bool flip_normal = false, bool sync = false) {
+		for (int i = 0; i < mMeshes.size(); ++i) {
+			mMeshes[i].calcuNormal(flip_normal, sync);
+		}
+	}
+
+	void calcuTB() {
+		for (int i = 0; i < mMeshes.size(); ++i) {
+			mMeshes[i].calcuTB();
+		}
+	}
+
+protected:
+	// 注意下面的结构体都是直接写入文件的，不要轻易修改数据出现的数据
+	friend class Importer;
+	static mat4 curPose[500];
+	struct Joints {
+		char mName[60];
+		int mParentId; mat4 mOffsetTransform;
+	};
+
+	struct JointHead {
+		int nAnims;
+		int nJoints;
+	};
+
+	struct AnimHead {
+		char mName[64] = {};
+		int frames;
+		float fps;
+		float during;
+		int channels;
+	};
+	struct ChannelHead {
+		char mName[64] = {};
+		int nQuas;
+		int nPoss;
+		int nScas;
+	};
+
+	struct DROModel {
+		int mesh_num;
+		char mDirectory[124] = {};
+		char mName[62] = {};
+		bool has_bone; bool gama_correction;
+	};
+	struct DROMeshHead {
+		char mName[64];
+		int ver_num;//顶点数
+		int ids_num;//索引数
+		int tex_num;//纹理数
+	};
+
+	//写到文件的直接可读纹理
+	struct TexHead {
+		char mName[48] = {};
+		int w; int h; int channels; TextureType type;
+	};
+	//直接可读对象
+	struct DROTexHead {
+		char obj_mName[28] = {};
+		int obj_nums;
+	};
+	TexHead GetTexHead(const Texture& tex) {
+		TexHead ret;
+		strcpy(ret.mName, tex.mName.c_str());
+		ret.w = tex.w; ret.h = tex.h; ret.channels = tex.mNumChannels; ret.type = tex.mType;
+		return ret;
+	}
+};
+
+
+class SkeletalMesh :public Mesh
+{
+public:
+
 	vector<Animation>		mAnims;
 	map<string, int>		mBoneIdMap;
 	Skeleton				mSkeleton;
-	Pose					mPose;//mPose保存的应该是偏移姿势
-	Pose					mStartPose;//过渡开始的姿势，应该是局部姿势
-	Pose					mTargetPose;
-	double					mTransEndTime = 0.0;
-	double					mTransStartTime;
 	int						mNumBones;
-	int						mCurAnimIndex = 0;
-	bool					mIsPlaying = false;
-	SkeletonObject(string const& path, bool gamma = false)
+
+	SkeletalMesh(string const& path, bool gamma = false)
 	{
 		mIsGammaCorection = gamma;
 		loadModel(path);
 	}
-
-	virtual void scale(const vec3& v) {
-		for (int i = 0; i < mMeshes.size(); ++i) {
-			auto& vt = mMeshes[i].mVertices;
-			for (int j = 0; j < mMeshes[i].mVertices.size(); ++j) {
-				vt[j].mPosition *= v;
-			}
-			mMeshes[i].syncData();
-		}
-
-		for (int i = 0; i < mAnims.size(); ++i) {
-			auto& an = mAnims[i];
-			for (int j = 0; j < an.mChannels.size(); ++j) {
-				auto& p = an.mChannels[j].mPositions;
-				for (int k = 0; k < p.size(); ++k) {
-					p[k].v *= v;
-				}
-			}
-		}
-		for (int i = 0; i < mNumBones; ++i) {
-			mSkeleton[i].mOffsetTransform.t *= v;
-			mSkeleton[i].mLocalTransform.t *= v;
-		}
-		mColliBody.scale(v);
-		//mModelTransform.s *= v;
-	}
-
-	SkeletonObject() {}
-	virtual ~SkeletonObject() {}
+	SkeletalMesh() {}
+	virtual ~SkeletalMesh() {}
 
 	// 路径中不要有中文
 	void loadModel(string const& path, bool flip_UV = false, bool load_texture = true);
@@ -138,7 +365,7 @@ public:
 		return  mNumBones > 0;
 	}
 	//应该保证 mBoneIdMap 不为空
-	void addAnimation(SkeletonObject& from, int which = -1, float scale = 1.0f) {
+	void addAnimation(SkeletalMesh& from, int which = -1, float scale = 1.0f) {
 		for (int i = 0; i < from.mAnims.size(); ++i) {
 			if (which != -1 && which != i) continue;
 			Animation an = from.mAnims[i];
@@ -185,55 +412,8 @@ public:
 		Mesh::clear();
 		mAnims.resize(0);
 		mSkeleton.mJoints.resize(0);
-		mPose.mPoses.resize(0);
 		mBoneIdMap.clear();
 		mNumBones = 0;
-	}
-	//动画过渡,target_mPose 是局部姿势
-	void transit(const Pose& target_mPose, double time) {
-		mTargetPose = target_mPose; mStartPose = mPose.toLocalPose(mSkeleton);
-		for (int i = 0; i < mNumBones; ++i) {
-			//debug << i << ", before: " << mPose[i].t << " , " << mStartPose[i].t << endl;
-		}
-		mTransEndTime = gameTime + time; mTransStartTime = gameTime;
-	}
-
-	void transit(const string& anim_mName, double time) {
-		for (int i = 0; i < mAnims.size(); ++i) {
-			if (anim_mName == mAnims[i].mName) {
-				mTargetPose = mAnims[i].localPoseAt(mSkeleton, 0.001);
-				break;
-			}
-		}
-		mStartPose = mPose.toLocalPose(mSkeleton);
-		mTransEndTime = gameTime + time; mTransStartTime = gameTime;
-	}
-
-	void applyPose(const Pose& p, bool sync_skeleton = false) {
-		mPose = p.toOffsetPose(mSkeleton);
-		if (!sync_skeleton)return;
-		for (int i = 0; i < mNumBones; ++i) {
-			mSkeleton[i].mCurTransform = mPose[i] * mSkeleton[i].mOffsetTransform.inv();
-		}
-	}
-
-	//从当前播放的动画中提取姿态
-	void updatePose() {
-		if (mTransEndTime <= gameTime)mPose = mAnims[mCurAnimIndex].poseAt(mSkeleton);
-		else
-		{
-			double val = (gameTime - mTransStartTime) / (mTransEndTime - mTransStartTime);
-			mPose = mStartPose.lerp(mTargetPose, val).toOffsetPose(mSkeleton);
-		}
-
-	}
-	// 将动画的矩阵调色板同步到显卡
-	void syncPose(uint shader_id) {
-		for (int i = 0; i < mNumBones; ++i) {
-			curPose[i] = mPose[i].mat4();
-		}
-		int loc = glGetUniformLocation(shader_id, "curs");
-		glUniformMatrix4fv(loc, mNumBones, GL_FALSE, value_ptr(curPose[0]));
 	}
 
 	//移除动画自带的位移
@@ -254,52 +434,6 @@ public:
 		return false;
 	}
 
-	//播放动画,填写一个不存在的动画名称将停止当前动画的播放.当transit_time大于0表示需要过渡
-	bool play(const string& animation_mName, float speed = 1.0f, double transit_time = -1.0) {
-		for (int i = 0; i < mAnims.size(); ++i) {
-			if (mAnims[i].mName == animation_mName) {
-				mCurAnimIndex = i;
-				mIsPlaying = true;
-				if (transit_time > 0) {
-					transit(mAnims[i].localPoseAt(mSkeleton, 0.000), transit_time);
-					static int hd = -1; timor.stop(hd);
-					hd = timor.push(transit_time, [=]()->bool {
-						mAnims[i].play(speed);
-						return true;
-						});
-				}
-				else mAnims[i].play(speed);
-				return true;
-			}
-		}
-		mIsPlaying = false;
-		return false;
-	}
-	bool play(int animation_index, float speed = 1.0f, double transit_time = -1.0) {
-		if (animation_index > -1 && animation_index < mAnims.size()) {
-			mCurAnimIndex = animation_index;
-			mIsPlaying = true;
-			if (transit_time > 0) {
-				transit(mAnims[mCurAnimIndex].localPoseAt(mSkeleton, 0.000), transit_time);
-				static int hd = -1; timor.stop(hd);
-				hd = timor.push(transit_time, [=]()->bool {
-					mAnims[mCurAnimIndex].play(speed);
-					return true;
-					});
-			}
-			else mAnims[mCurAnimIndex].play(speed);
-			return true;
-		}
-		mIsPlaying = false;
-		return false;
-	}
-	void setPlaySpeed(float speed = 1.0f) {
-		mAnims[mCurAnimIndex].setPlaySpeed(speed);
-	}
-
-	void stop() {
-		mIsPlaying = false;
-	}
 	void removeSkeleton() {
 		mNumBones = 0; mSkeleton.mJoints.resize(0);
 	}
@@ -309,7 +443,7 @@ public:
 	const Skeleton& skeleton()const {
 		return mSkeleton;
 	}
-	virtual void swap(SkeletonObject& m) {
+	virtual void swap(SkeletalMesh& m) {
 		Mesh::swap(m);
 		mAnims.swap(m.mAnims);
 		std::swap(mNumBones, m.mNumBones);
@@ -342,11 +476,7 @@ public:
 			else mSkeleton[i].mLocalTransform = mSkeleton[i].mOffsetTransform.inv();
 		}
 	}
-	virtual void draw(uint shader_id)
-	{
-		if (mIsPlaying && mNumBones > 0)updatePose(), syncPose(shader_id);
-		Mesh::draw(shader_id);
-	}
+
 	//将人物缩放到1.8米高,并将脚摆放至（0,0）点
 	void normalizeCharacter(float height = 1.8) {
 		//标准化模型
@@ -368,12 +498,13 @@ public:
 				v[j].mPosition.y += b_max; v[j].mPosition *= scale_time;
 				v[j].mPosition.x -= cen.x; v[j].mPosition.z -= cen.z;
 			}
-			mMeshes[i].syncData();
 		}
+
 		for (int i = 0; i < mNumBones; ++i) {
 			mSkeleton[i].mOffsetTransform.t *= scale_time;
 			mSkeleton[i].mLocalTransform.t *= scale_time;
 		}
+
 		for (int i = 0; i < mAnims.size(); ++i) {
 			auto& an = mAnims[i];
 			for (int j = 0; j < an.mChannels.size(); ++j) {
@@ -451,7 +582,6 @@ public:
 					mesh.mTextures.push_back(&mTextures.back());
 				}
 			}
-			mesh.setup();
 			pushMesh(mesh);
 		}
 		f.close();
@@ -606,9 +736,6 @@ public:
 		}
 		delete[] unused;
 		f.close();
-		if (jh.nAnims > 0) {
-			mPose = mAnims[0].localPoseAt(mSkeleton, 0);
-		}
 	}
 
 };

@@ -403,7 +403,7 @@ namespace gm {
 	//先平移，再缩放/旋转（由于是等比缩放，可以先缩放，也可以后缩放）
 	struct SQT {
 	public:
-		SQT() : q(0, 0, 0, 1), t(0, 0, 0), s(1) {}
+		SQT() : q(0, 0, 0, 1), t(0, 0, 0), s(1, 1, 1) {}
 		SQT(const vec3& S, const qua& Q, const vec3& T) {
 			q = Q; s = S; t = T;
 		}

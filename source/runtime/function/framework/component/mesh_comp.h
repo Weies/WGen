@@ -1,14 +1,12 @@
 #pragma once
 #include"component.h"
 #include"function/base/render_base.h"
-#include"animation.h"
+#include"animation_comp.h"
 
-
-#include"function/scene/model_importer.h"
 
 class MeshComponent :public Component {
 public:
-	vector<MeshDesc>	mRawMeshes;
+	vector<MeshDesc>		mRawMeshes;
 	string					mMeshFile;
 
 	RegisterComponent(Mesh);
