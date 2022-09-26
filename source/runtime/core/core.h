@@ -5,6 +5,7 @@
 #include"log/exception.h"
 #include"base/singleton.h"
 #include"meta/json.h"
+#include"meta/serializer.h"
 
 #include<fstream>
 

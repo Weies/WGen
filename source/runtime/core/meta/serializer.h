@@ -18,7 +18,7 @@ struct darray
 	size_t mSize;
 	uchar* mData;
 	size_t mCapacity;
-
+	size_t mIndex{};
 
 	darray() :mSize(0), mCapacity(0), mData(0) {}
 	darray(size_t size) :mSize(size), mCapacity(size), mData(new uchar[size]) {}
@@ -98,8 +98,24 @@ struct darray
 			mData = new_data;
 		}
 
-		memcpy(mData, &val, sizeof(T));
+		memcpy((void*)mData, (void*)&val, sizeof(T));
 		mSize = new_size;
+		return *this;
+	}
+
+	template<class T>
+	darray& operator>>(T& val)
+	{
+		if (mIndex + sizeof(T) > mSize)
+		{
+			val = {};
+			debug("array>>val is out of memory");
+		}
+		else
+		{
+			memcpy((void*)&val, (void*)mData + mIndex, sizeof(T));
+			mIndex += sizeof(val);
+		}
 		return *this;
 	}
 
@@ -120,8 +136,9 @@ struct darray
 		memcpy(mData, str.c_str(), str.size());
 		mSize = new_size;
 		return *this;
-
 	}
+
+
 
 
 	uchar* data() { return mData; }
@@ -134,10 +151,42 @@ struct darray
 class Archive
 {
 public:
+	darray arr;
+
+	template<class T>
+	Archive& operator<<(T& val) = 0;
+
+	virtual bool isLoading() { return true; }
+
+	virtual bool isSaving() { return true; }
 
 };
 
-class Serializer {
+class ArchiveLoad :public Archive
+{
 public:
+	virtual bool isLoading() { return true; }
+
+	virtual bool isSaving() { return false; }
+
+	template<class T>
+	Archive& operator<<(T& val) override
+	{
+		arr << val;
+	};
+};
+
+class ArchiveSave :public Archive
+{
+public:
+	virtual bool isLoading() { return false; }
+
+	virtual bool isSaving() { return true; }
+
+	template<class T>
+	Archive& operator<<(T& val) override
+	{
+		arr >> val;
+	};
 
 };
