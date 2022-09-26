@@ -87,9 +87,6 @@
     <ClCompile Include="source\z_old_version\new\model_importer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="source\runtime\core\meta\bjson11.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\runtime\function\base\baseClass.h">
@@ -380,7 +377,7 @@
     <ClInclude Include="source\runtime\platform\file_system\file.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="source\runtime\core\meta\bjson11.hpp">
+    <ClInclude Include="source\runtime\core\math\math_serialize.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

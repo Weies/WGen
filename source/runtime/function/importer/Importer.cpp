@@ -105,7 +105,7 @@ vector<ImportTexHead> importTextures(Mesh& m, aiMaterial* mat, TextureType tex_t
 	return textures;
 }
 
-void processMesh(SkeletalMesh& m, aiMesh* mesh, const aiScene* scene, map<string, int>& bone_id, ll mask)
+void processMesh(SkeletalMesh& m, aiMesh* mesh, const aiScene* scene, map<string, int>& bone_id, llong mask)
 {
 	vector<vertex> vertices; vector<uint> indices; vector<ImportTexHead> textures;
 	//µ¼ÈëÍø¸ñ
@@ -190,7 +190,7 @@ void processMesh(SkeletalMesh& m, aiMesh* mesh, const aiScene* scene, map<string
 	delete mee;
 }
 
-void processNode(SkeletalMesh& m, aiNode* node, const aiScene* scene, map<string, int>& bone_id, ll mask)
+void processNode(SkeletalMesh& m, aiNode* node, const aiScene* scene, map<string, int>& bone_id, llong mask)
 {
 	for (unsigned int i = 0; i < node->mNumMeshes; i++)
 	{
@@ -253,7 +253,7 @@ void processJoint(SkeletalMesh& m, aiNode* node, const aiScene* scene, map<strin
 
 Importer::Importer() :hand(0), imp(new Assimp::Importer) {}
 
-bool Importer::Import(SkeletalMesh& m, const string& path, ll mask) {
+bool Importer::Import(SkeletalMesh& m, const string& path, llong mask) {
 	if (hand)delete (aiScene*)hand;
 	if (imp)delete imp, imp = new Assimp::Importer;
 	m.clear();
@@ -338,7 +338,7 @@ bool Importer::Import(SkeletalMesh& m, const string& path, ll mask) {
 	}
 	return true;
 }
-bool Importer::Export(const string& filePath, ll mask, CodeType type) {
+bool Importer::Export(const string& filePath, llong mask, CodeType type) {
 	Assimp::Exporter exp;
 	return !exp.Export((aiScene*)hand, filePath.substr(filePath.find_last_of('.') + 1), filePath, mask);
 }
@@ -437,7 +437,7 @@ aiMaterial* makeMaterial(const SkeletalMesh& m, int texIdx, bool tran, CodeType 
 	return mat;
 }
 
-bool Importer::Export(const SkeletalMesh& m, const string& filePath, ll mask, CodeType type) {
+bool Importer::Export(const SkeletalMesh& m, const string& filePath, llong mask, CodeType type) {
 	aiScene* sn = new aiScene;
 	string name = m.mDirectory + '/' + m.mName; bool tran = (type != gb2312);
 	if (tran)name = Encoder::convert(gb2312, type, name);

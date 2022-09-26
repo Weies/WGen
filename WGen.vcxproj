@@ -158,7 +158,6 @@
     <ClCompile Include="cpps\ttest.cpp" />
     <ClCompile Include="editor\main.cpp" />
     <ClCompile Include="editor\pbr.cpp" />
-    <ClCompile Include="source\runtime\core\meta\bjson11.cpp" />
     <ClCompile Include="source\runtime\function\base\global_values.cpp" />
     <ClCompile Include="source\runtime\core\log\debuger.cpp" />
     <ClCompile Include="source\runtime\core\math\rand.cpp" />
@@ -185,7 +184,7 @@
     <ClInclude Include="source\runtime\core\base\singleton.h" />
     <ClInclude Include="source\runtime\core\core.h" />
     <ClInclude Include="source\runtime\core\math\angle.h" />
-    <ClInclude Include="source\runtime\core\meta\bjson11.hpp" />
+    <ClInclude Include="source\runtime\core\math\math_serialize.h" />
     <ClInclude Include="source\runtime\core\meta\json.h" />
     <ClInclude Include="source\runtime\core\meta\serializer.h" />
     <ClInclude Include="source\runtime\Engine.h" />

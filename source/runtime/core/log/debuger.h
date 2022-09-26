@@ -132,7 +132,7 @@ public:
 	void debugbyte(const string& s);
 	void debugbit(void* ptr, int size) {
 		if (size > 63)size = 64;
-		ll num = *(ll*)ptr;
+		llong num = *(llong*)ptr;
 		for (int i = size - 1; i > -1; --i) {
 			o << int((num & (1ll << i)) != 0);
 		}

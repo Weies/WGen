@@ -6,7 +6,7 @@
 #include"base/singleton.h"
 #include"meta/json.h"
 #include"meta/serializer.h"
-
+#include"math/math_serialize.h"
 #include<fstream>
 
 using Transform = gm::SQT;

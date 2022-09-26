@@ -1,6 +1,6 @@
 #pragma once
 
-using ll = long long;
+using llong = long long;
 
 namespace gm {
 	int Rand();

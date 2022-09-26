@@ -28,6 +28,12 @@ struct ImportTexHead
 	TextureType mType;
 };
 
+Archive& operator<<(Archive& ar, vertex& v)
+{
+	ar << v.mPosition << v.mNormal << v.mTexCoord << v.mTangent << v.mBitangent << v.mBoneIds << v.mBoneWeights;
+	return ar;
+}
+
 //三角面片，由多个三角形组成
 class MeshPatch
 {
@@ -37,6 +43,12 @@ public:
 	vector<uint>		mIndices;//索引表
 	vector<ImportTexHead>		mTextures;//纹理表
 	Transform			mTransform;
+
+	Archive& operator<<(Archive& ar)
+	{
+		ar << mName << mVertices << mIndices << mTextures << mTransform;
+		return ar;
+	}
 
 	void addTexture(ImportTexHead& tex) {
 		mTextures.push_back(tex);
@@ -153,9 +165,11 @@ public:
 			vt[v3].mTangent = t; vt[v3].mBitangent = b;
 		}
 	}
+
+
 protected:
 
-	ll hash(ll a, ll b) {
+	llong hash(llong a, llong b) {
 		return a * b * 6170729 + (a + b) * 1254745 + 51155471 * (a * a + b * b) + a * 158547 / (b + 8131657) + b * 158547 / (a + 8131657);
 	}
 
@@ -176,6 +190,15 @@ public:
 
 	Mesh() {}
 	virtual ~Mesh() {}
+
+
+
+	Archive& serialize(Archive& ar)
+	{
+		ar << mName << mTransform << mDirectory;
+		ar << mMeshes;
+		return ar;
+	}
 
 	string format() {
 		size_t p = mName.find_last_of('.');
@@ -342,6 +365,7 @@ public:
 	map<string, int>		mBoneIdMap;
 	Skeleton				mSkeleton;
 	int						mNumBones;
+
 
 	SkeletalMesh(string const& path, bool gamma = false)
 	{

@@ -10,23 +10,19 @@ int main()
 	SkeletalMesh m;
 	imp.Import(m, "asset/models/yuan/ying/ying.pmx");
 
-	ll t = clock();
-	Json j = imp.jsonlize(m);
-	debug(clock() - t);
+	LinkerLoad load;
+	LinkerSave save;
+	Archive ar(&save);
 
-	t = clock();
-	string s = j.dump().str();
-	debug(clock() - t);
+	m.serialize(ar);
 
-	t = clock();
-	Json jo;
-	string err;
-	jo.parse(s.c_str(), err);
-	debug(clock() - t);
+	load.arr.swap(save.arr);
 
-	t = clock();
-	FileHelper::saveStringToFile(s, "asset/1.json");
-	debug(clock() - t);
+	ar.linker = &load;
+
+	SkeletalMesh mm;
+
+	mm.serialize(ar);
 
 
 

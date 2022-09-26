@@ -3,9 +3,9 @@
 #define abs(x) ((x)<0?(-(x)):x)
 
 namespace gm {
-	ll seed = 155454417;
-	ll out = 544189413;
-	ll MAX_RAND = 32367;
+	llong seed = 155454417;
+	llong out = 544189413;
+	llong MAX_RAND = 32367;
 
 
 	int Rand()

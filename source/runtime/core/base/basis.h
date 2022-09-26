@@ -19,7 +19,9 @@
 #define assert(x,y)		if(!(x)){debug<<y<<endl;__debugbreak();};
 #define assert(x)		if(!(x))__debugbreak();
 
-using ll = long long;
+using llong = long long;
+using ullong = unsigned long long;
+using ulong = unsigned long;
 using uint = unsigned int;
 using us = unsigned int;
 using std::string;
