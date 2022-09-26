@@ -626,7 +626,7 @@ namespace gm {
 	}
 
 
-	using uchar = unsigned char;
+
 	using vec2 = vector2<float>;
 	using vec3 = vector3<float>;
 	using vec4 = vector4<float>;

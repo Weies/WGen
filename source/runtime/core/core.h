@@ -6,12 +6,12 @@
 #include"base/singleton.h"
 #include"meta/json.h"
 
-
 #include<fstream>
-using Transform = SQT;
+
+using Transform = gm::SQT;
 
 template<class key, class value>
-using umap = unordered_map<key, value>;
+using umap = std::unordered_map<key, value>;
 
 #define Invalid_ID (uid{0})
 //uid==0 means invalid id

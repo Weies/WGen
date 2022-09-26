@@ -48,29 +48,58 @@ void traverseScene(aiNode* node, const aiScene* scene, int lv, int its) {
 	}
 }
 
-vector<Texture*> loadTextures(Mesh& m, aiMaterial* mat, TextureType tex_type, bool load_from_file = true)
+//vector<Texture*> loadTextures(Mesh& m, aiMaterial* mat, TextureType tex_type, bool load_from_file = true)
+//{
+//	vector<Texture*> textures;
+//	int end = mat->GetTextureCount(cast(aiTextureType, tex_type));
+//	aiTextureType_DIFFUSE;
+//	for (unsigned int i = 0; i < end; i++)
+//	{
+//		aiString str;
+//		mat->GetTexture(cast(aiTextureType, tex_type), i, &str);
+//		string name = str.C_Str(); bool skip = false;
+//		name = Encoder::getGBK(name);
+//		for (int j = 0; j < m.mTextures.size(); ++j) {
+//			if (fileName(name) == fileName(m.mTextures[j].mName)) {
+//				textures.push_back(&m.mTextures[j]);
+//				skip = true; break;
+//			}
+//		}
+//		if (!skip) {
+//			Texture texture(GL_TEXTURE_2D);
+//			if (load_from_file)texture.load(name, m.mDirectory);
+//			else texture.mName = name;
+//			texture.mType = tex_type;
+//			m.mTextures.push_back(std::move(texture));
+//			textures.push_back(&m.mTextures.back());
+//		}
+//	}
+//	return textures;
+//}
+
+
+vector<ImportTexHead> importTextures(Mesh& m, aiMaterial* mat, TextureType tex_type, bool load_from_file = true)
 {
-	vector<Texture*> textures;
+	vector<ImportTexHead> textures;
 	int end = mat->GetTextureCount(cast(aiTextureType, tex_type));
+
 	for (unsigned int i = 0; i < end; i++)
 	{
 		aiString str;
 		mat->GetTexture(cast(aiTextureType, tex_type), i, &str);
 		string name = str.C_Str(); bool skip = false;
 		name = Encoder::getGBK(name);
+
 		for (int j = 0; j < m.mTextures.size(); ++j) {
-			if (fileName(name) == fileName(m.mTextures[j].mName)) {
-				textures.push_back(&m.mTextures[j]);
+			if (fileName(name) == fileName(m.mTextures[j].mPath)) {
+				textures.push_back({ m.mDirectory + '/' + name,tex_type });
 				skip = true; break;
 			}
 		}
 		if (!skip) {
-			Texture texture(GL_TEXTURE_2D);
-			if (load_from_file)texture.load(name, m.mDirectory);
-			else texture.mName = name;
-			texture.mType = tex_type;
-			m.mTextures.push_back(texture);
-			textures.push_back(&m.mTextures.back());
+			ImportTexHead head = { m.mDirectory + '/' + name,tex_type };
+			m.mTextures.push_back(head);
+			textures.push_back(head);
 		}
 	}
 	return textures;
@@ -78,7 +107,7 @@ vector<Texture*> loadTextures(Mesh& m, aiMaterial* mat, TextureType tex_type, bo
 
 void processMesh(SkeletalMesh& m, aiMesh* mesh, const aiScene* scene, map<string, int>& bone_id, ll mask)
 {
-	vector<vertex> vertices; vector<uint> indices; vector<Texture*> textures;
+	vector<vertex> vertices; vector<uint> indices; vector<ImportTexHead> textures;
 	//µ¼ÈëÍø¸ñ
 	if (mask & LoadMeshes) {
 		for (unsigned int i = 0; i < mesh->mNumVertices; i++)
@@ -141,16 +170,16 @@ void processMesh(SkeletalMesh& m, aiMesh* mesh, const aiScene* scene, map<string
 
 	aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 	bool load_from_file = mask & LoadTextures;
-	vector<Texture*> diffuseMaps = loadTextures(m, material, texture_diffuse, load_from_file);
+	vector<ImportTexHead> diffuseMaps = importTextures(m, material, texture_diffuse, load_from_file);
 	textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
 
-	vector<Texture*> specularMaps = loadTextures(m, material, texture_specular, load_from_file);
+	vector<ImportTexHead> specularMaps = importTextures(m, material, texture_specular, load_from_file);
 	textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
 
-	vector<Texture*> normalMaps = loadTextures(m, material, texture_normal, load_from_file);
+	vector<ImportTexHead> normalMaps = importTextures(m, material, texture_normal, load_from_file);
 	textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
 
-	vector<Texture*> heightMaps = loadTextures(m, material, texture_height, load_from_file);
+	vector<ImportTexHead> heightMaps = importTextures(m, material, texture_height, load_from_file);
 	textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
 
 	MeshPatch* mee = new MeshPatch(vertices, indices, textures);
@@ -245,9 +274,9 @@ bool Importer::Import(SkeletalMesh& m, const string& path, ll mask) {
 		processJoint(m, scene->mRootNode->mChildren[scene->mRootNode->mNumChildren - 1], scene, m.mBoneIdMap);
 	}
 	else m.mSkeleton = Skeleton(0), m.mNumBones = 0;
-	
+
 	processNode(m, scene->mRootNode, scene, m.mBoneIdMap, mask);
-	
+
 	if (scene->HasAnimations() && (mask & LoadAnimations)) {
 		for (int i = 0; i < scene->mNumAnimations; ++i) {
 			Animation anim;
@@ -381,12 +410,12 @@ aiMesh* makeMesh(const SkeletalMesh& m, const int meshIdx, bool tran, CodeType t
 aiMaterial* makeMaterial(const SkeletalMesh& m, int texIdx, bool tran, CodeType tp) {
 	aiMaterial* mat = new aiMaterial();
 	auto& tex = m.mTextures[texIdx];
-	string name = tex.mName.substr(tex.mName.find_last_of('/') + 1);
+	string name = tex.mPath.substr(tex.mPath.find_last_of('/') + 1);
 	if (tran)name = Encoder::convert(gb2312, tp, name);
 	aiString Tname(name);
 	mat->AddProperty(&Tname, AI_MATKEY_NAME);
 
-	name = tex.mName; if (tran)name = Encoder::convert(gb2312, tp, name);
+	name = tex.mPath; if (tran)name = Encoder::convert(gb2312, tp, name);
 	aiString texture_path(name);
 	mat->AddProperty(&texture_path, AI_MATKEY_TEXTURE(tex.mType, 0));
 
@@ -436,7 +465,7 @@ bool Importer::Export(const SkeletalMesh& m, const string& filePath, ll mask, Co
 		sn->mMeshes[i]->mName = name;
 
 		if (mes.mTextures.size() > 0) {
-			sn->mMeshes[i]->mMaterialIndex = mes.mTextures[0] - &m.mTextures[0];
+			sn->mMeshes[i]->mMaterialIndex = &mes.mTextures[0] - &m.mTextures[0];
 		}
 		else sn->mMeshes[i]->mMaterialIndex = 0;
 	}

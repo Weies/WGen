@@ -20,10 +20,7 @@ void MeshPatch::calcuNormal(bool flip_mNormal, bool sync) {
 }
 
 void Mesh::addTexture(const string& name, TextureType tp, int to_whom) {
-	Texture tex(GL_TEXTURE_2D);
-	tex.load(name, mDirectory);
-	tex.mType = tp;
-	mTextures.push_back(tex);
+	mTextures.push_back({ name,tp });
 	if (to_whom == -1) {
 		for (int i = 0; i < mMeshes.size(); ++i)
 			mMeshes[i].addTexture(mTextures.back());
@@ -32,7 +29,7 @@ void Mesh::addTexture(const string& name, TextureType tp, int to_whom) {
 	else mMeshes[to_whom].addTexture(mTextures.back());
 }
 
-void Mesh::addTexture(const Texture& tex, int to_whom) {
+void Mesh::addTexture(const ImportTexHead& tex, int to_whom) {
 	mTextures.push_back(tex);
 	if (to_whom == -1) {
 		for (int i = 0; i < mMeshes.size(); ++i)

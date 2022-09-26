@@ -31,10 +31,45 @@ enum TextureType {
 
 class Texture {
 public:
+
+	string mName; TextureType mType = texture_none;
+	uint mId; int mTarget = -1;
+	void* mData = 0;
+	union { int mWidth; int w; };
+	union { int mHeight; int h; };
+	int mNumChannels;
+
 	Texture(int texture_mTarget = -1) {
 		if (texture_mTarget != -1)
 			gen(texture_mTarget);
 	}
+
+	Texture(Texture&& tex)
+	{
+		swap(tex);
+	}
+
+	Texture& operator=(const Texture& tex) = default;
+
+	Texture& operator=(Texture&& tex)
+	{
+		swap(tex);
+		return *this;
+	}
+
+	void swap(Texture& tex)
+	{
+		mName.swap(tex.mName);
+
+		std::swap(mType, tex.mType);
+		std::swap(mId, tex.mId);
+		std::swap(mTarget, tex.mTarget);
+		std::swap(mData, tex.mData);
+		std::swap(mWidth, tex.mWidth);
+		std::swap(mHeight, tex.mHeight);
+		std::swap(mNumChannels, tex.mNumChannels);
+	}
+
 	void gen(int texture_mTarget = GL_TEXTURE_2D)
 	{
 		if (mTarget != -1)glDeleteTextures(1, &mId);
@@ -42,6 +77,7 @@ public:
 		glGenTextures(1, &mId);
 		glBindTexture(mTarget, mId);
 	}
+
 
 	void bind()const
 	{
@@ -193,12 +229,6 @@ public:
 		//glActiveTexture(mTarget);
 	}
 
-	string mName; TextureType mType = texture_none;
-	uint mId; int mTarget = -1;
-	void* mData = 0;
-	union { int mWidth; int w; };
-	union { int mHeight; int h; };
-	int mNumChannels;
 };
 
 class FBOBuffer {

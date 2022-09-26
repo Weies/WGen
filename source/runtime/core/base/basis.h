@@ -26,6 +26,7 @@ using std::string;
 using std::ostringstream;
 using std::vector;
 using uid = size_t;
+using uchar = unsigned char;
 //template<class T, class P>
 //using unordered_map = unordered_map<T, P>;
 

@@ -87,6 +87,9 @@
     <ClCompile Include="source\z_old_version\new\model_importer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="source\runtime\core\meta\bjson11.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\runtime\function\base\baseClass.h">
@@ -374,6 +377,12 @@
     <ClInclude Include="source\z_old_version\new\model_importer.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="source\runtime\platform\file_system\file.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="source\runtime\core\meta\bjson11.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="source\shader\pbr.shader" />
@@ -384,5 +393,6 @@
     <None Include="asset\world.json" />
     <None Include="asset\level.json" />
     <None Include="asset\player.json" />
+    <None Include="asset\1.json" />
   </ItemGroup>
 </Project>
