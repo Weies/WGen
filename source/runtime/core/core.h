@@ -10,7 +10,7 @@
 #include<fstream>
 
 using Transform = gm::SQT;
-
+using namespace std;
 template<class key, class value>
 using umap = std::unordered_map<key, value>;
 

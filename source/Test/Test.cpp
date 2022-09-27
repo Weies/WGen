@@ -3,6 +3,10 @@
 #include"function/importer/importer.h"
 #include"function/importer/mesh.h"
 
+
+
+#include<iostream>
+
 int main()
 {
 

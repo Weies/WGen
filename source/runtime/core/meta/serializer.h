@@ -83,6 +83,17 @@ struct darray
 		return *this;
 	}
 
+	void byte_swap(void* pp, size_t size)
+	{
+		uchar* p = (uchar*)pp;
+		size >>= 1;
+		size_t mid = size;
+		while (size)
+		{
+			std::swap(p[mid + size - 1], p[mid - size]);
+			size >>= 1;
+		}
+	}
 
 	template<class T>
 	darray& operator>>(T& val)
@@ -131,7 +142,7 @@ struct darray
 			mData = new_data;
 		}
 
-		memcpy((void*)mData, (void*)data, size);
+		memcpy(mData + mSize, (void*)data, size);
 		mSize = new_size;
 	}
 
@@ -162,8 +173,8 @@ struct darray
 			free(mData);
 			mData = new_data;
 		}
-		memcpy((void*)mData, (void*)&size, sizeof(size_t));
-		memcpy((void*)mData, (char*)data + sizeof(size_t), size);
+		memcpy(mData + mSize, (void*)&size, sizeof(size_t));
+		memcpy(mData + mSize + sizeof(size_t), (char*)data, size);
 		mSize = new_size;
 	}
 
@@ -176,8 +187,8 @@ struct darray
 		}
 		else
 		{
-			memcpy((void*)&size, mData + mIndex, sizeof(size_t));
-			memcpy(data, (void*)(mData + mIndex + sizeof(size_t)), size);
+			memcpy(&size, mData + mIndex, sizeof(size_t));
+			memcpy(data, mData + mIndex + sizeof(size_t), size);
 		}
 		mIndex = new_index;
 	}
@@ -274,12 +285,21 @@ public:
 	Archive& operator<<(bool& val) { linker->serial(val);	return*this; };
 	Archive& operator<<(char& val) { linker->serial(val);	return*this; };
 	Archive& operator<<(string& val) { linker->serial(val); return*this; };
-	Archive& operator<<(void* data) 
-	{ 
 
+	Archive& operator<<(void* data)
+	{
+		size_t size;
+		if (linker->isLoading())
+		{
+			size = *(size_t*)(linker->arr.mData + linker->arr.mIndex - sizeof(size_t));
+		}
+		else
+		{
+			size = *(size_t*)(linker->arr.mData + linker->arr.mSize - sizeof(size_t));
+		}
+		linker->serial(data, size);
 		return*this;
 	};
-
 
 	virtual bool isLoading() { return linker->isLoading(); }
 
@@ -299,14 +319,21 @@ Archive& operator<<(Archive& ar, vector<T>& val)
 	}
 	if constexpr (std::is_trivially_constructible<T>::value)
 	{
-		ar.linker->serial((void*)&val[0], sizeof(T) * size);
+		ar << &val[0];
 	}
 	else
 	{
 		for (T& v : val)
 		{
-			ar << (T&)v;
+			ar << v;
 		}
 	}
 	return ar;
 };
+
+template<class T>
+inline typename std::enable_if<std::is_enum<T>::value, Archive>::type& operator<<(Archive& ar, T& v)
+{
+	ar << (int&)v;
+	return ar;
+}
