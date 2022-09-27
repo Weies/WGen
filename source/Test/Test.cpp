@@ -22,7 +22,7 @@ int main()
 
 	load.arr.swap(save.arr);
 
-	ar.linker = &load;
+	ar.mLinker = &load;
 
 	SkeletalMesh mm;
 

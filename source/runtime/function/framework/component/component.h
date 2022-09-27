@@ -13,16 +13,17 @@ public:
 	Component(GObject* parent) :mParent(parent) {}
 	void setParent(GObject* par) {
 		mParent = par;
-		debug("parent");
 	}
 
 	virtual const string& type() = 0;
-
-
-
 	virtual ~Component() {}
 	virtual void tick(float deltaTime) {}
 	virtual void destory() {}
+
+	virtual void serial(Archive& ar)
+	{
+
+	}
 
 private:
 
@@ -44,7 +45,7 @@ class ComponentHelper :public Singleton<ComponentHelper>
 public:
 	map<string, void* (*)()> mComponents;
 
-	
+
 
 	Component* initComponent(const Json& comp_json)
 	{
@@ -92,6 +93,11 @@ public:
 	virtual void finalize(const Json& j) override
 	{
 		mTransform = JsonHelper::parseTransform(j);
+	}
+	virtual void serial(Archive& ar) override
+	{
+		Component::serial(ar);
+
 	}
 
 	RegisterComponent(Transform);

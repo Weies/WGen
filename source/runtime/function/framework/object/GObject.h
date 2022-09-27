@@ -11,8 +11,10 @@ class GObject {
 public:
 	uint				mId;
 	string				mName;
+	string				mFilePath;
 	string				mDefinitionUrl;
 	vector<Component*>	mComponents;
+
 	GObject() :mId(INVAILID_ID) {}
 	GObject(uint id) :mId(id) {}
 	~GObject() {
@@ -29,6 +31,7 @@ public:
 
 	void initialize(const string& object_path)
 	{
+		mFilePath = object_path;
 		Json obj = JsonHelper::load(object_path);
 
 		mId = obj["Id"].int_value();
@@ -40,6 +43,16 @@ public:
 		for (auto& comp : comps)
 		{
 			addComponent(ComponentHelper::get().initComponent(comp));
+		}
+	}
+
+	virtual void serial(Archive& ar)
+	{
+		ar << mId << mName << mFilePath << mDefinitionUrl;
+
+		for (auto& comp : mComponents)
+		{
+			comp->;
 		}
 	}
 

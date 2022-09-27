@@ -279,7 +279,6 @@
     <ClInclude Include="thirdparty\json11\json11.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="asset\1.json" />
     <None Include="asset\level.json" />
     <None Include="asset\player.json" />
     <None Include="asset\world.json" />

@@ -17,6 +17,72 @@ struct darray
 	darray() :mSize(0), mCapacity(0), mData(0) {}
 	darray(size_t size) :mSize(size), mCapacity(size), mData(new uchar[size]) {}
 	darray(size_t size, uchar val) :mSize(size), mCapacity(size), mData(new uchar[size]) { memset(mData, val, size); }
+	~darray() { delete[] mData; }
+
+	void write(const void* data, size_t size)
+	{
+		size_t new_size = size + mSize;
+
+		if (mCapacity < new_size)
+		{
+			mCapacity += new_size + size << 1;
+
+			uchar* new_data = (uchar*)malloc(mCapacity);
+			memcpy(new_data, mData, mSize);
+			free(mData);
+			mData = new_data;
+		}
+
+		memcpy(mData + mSize, (void*)data, size);
+		mSize = new_size;
+	}
+
+	void read(void* data, size_t size)
+	{
+		size_t new_index = mIndex + size;
+		if (new_index > mSize)
+		{
+			debug("array>>val is out of memory");
+		}
+		else
+		{
+			memcpy((void*)data, (void*)(mData + mIndex), size);
+		}
+		mIndex = new_index;
+	}
+
+	void write_size(const void* data, size_t size)
+	{
+		size_t new_size = size + mSize + sizeof(size_t);
+
+		if (mCapacity < new_size)
+		{
+			mCapacity += new_size + size << 1;
+
+			uchar* new_data = (uchar*)malloc(mCapacity);
+			memcpy(new_data, mData, mSize);
+			free(mData);
+			mData = new_data;
+		}
+		memcpy(mData + mSize, (void*)&size, sizeof(size_t));
+		memcpy(mData + mSize + sizeof(size_t), (char*)data, size);
+		mSize = new_size;
+	}
+
+	void read_size(void* data, size_t& size)
+	{
+		size_t new_index = mIndex + size + sizeof(size_t);
+		if (new_index > mSize)
+		{
+			debug("array>>val is out of memory");
+		}
+		else
+		{
+			memcpy(&size, mData + mIndex, sizeof(size_t));
+			memcpy(data, mData + mIndex + sizeof(size_t), size);
+		}
+		mIndex = new_index;
+	}
 
 	void swap(darray& a)
 	{
@@ -128,74 +194,12 @@ struct darray
 	}
 
 
-	void write(const void* data, size_t size)
-	{
-		size_t new_size = size + mSize;
 
-		if (mCapacity < new_size)
-		{
-			mCapacity += new_size + size << 1;
-
-			uchar* new_data = (uchar*)malloc(mCapacity);
-			memcpy(new_data, mData, mSize);
-			free(mData);
-			mData = new_data;
-		}
-
-		memcpy(mData + mSize, (void*)data, size);
-		mSize = new_size;
-	}
-
-	void read(void* data, size_t size)
-	{
-		size_t new_index = mIndex + size;
-		if (new_index > mSize)
-		{
-			debug("array>>val is out of memory");
-		}
-		else
-		{
-			memcpy((void*)data, (void*)(mData + mIndex), size);
-		}
-		mIndex = new_index;
-	}
-
-	void write_size(const void* data, size_t size)
-	{
-		size_t new_size = size + mSize + sizeof(size_t);
-
-		if (mCapacity < new_size)
-		{
-			mCapacity += new_size + size << 1;
-
-			uchar* new_data = (uchar*)malloc(mCapacity);
-			memcpy(new_data, mData, mSize);
-			free(mData);
-			mData = new_data;
-		}
-		memcpy(mData + mSize, (void*)&size, sizeof(size_t));
-		memcpy(mData + mSize + sizeof(size_t), (char*)data, size);
-		mSize = new_size;
-	}
-
-	void read_size(void* data, size_t& size)
-	{
-		size_t new_index = mIndex + size + sizeof(size_t);
-		if (new_index > mSize)
-		{
-			debug("array>>val is out of memory");
-		}
-		else
-		{
-			memcpy(&size, mData + mIndex, sizeof(size_t));
-			memcpy(data, mData + mIndex + sizeof(size_t), size);
-		}
-		mIndex = new_index;
-	}
 
 	uchar* data() { return mData; }
-	size_t size() { return mSize; }
-	size_t capacity() { return mCapacity; };
+	const uchar* data() const { return mData; }
+	size_t size() const { return mSize; }
+	size_t capacity() const { return mCapacity; };
 
 
 };
@@ -205,10 +209,17 @@ class Linker
 public:
 	darray arr;
 
+	Linker() {}
+
+	size_t size() const { return arr.size(); }
+	uchar* data() { return arr.data(); }
+	const uchar* data() const { return arr.data(); }
+	void resize(size_t size) { arr.resize(size); }
 	virtual bool isLoading() { return true; }
 
 	virtual bool isSaving() { return false; }
 
+	virtual void swap(Linker& l) { arr.swap(l.arr); }
 
 	virtual void serial(int& val) = 0;
 	virtual void serial(float& val) = 0;
@@ -225,6 +236,8 @@ public:
 class LinkerLoad :public Linker
 {
 public:
+
+
 	virtual bool isLoading() { return true; }
 
 	virtual bool isSaving() { return false; }
@@ -272,38 +285,62 @@ public:
 class Archive
 {
 public:
-	Linker* linker;
+	Linker* mLinker;
+	string mFilePath;
+	Archive(Linker* link) :mLinker(link) {}
+	Archive(Linker* link, const string& file_path) :mLinker(link), mFilePath(file_path) {}
 
-	Archive(Linker* link) :linker(link) {}
 
-	Archive& operator<<(int& val) { linker->serial(val);	return*this; };
-	Archive& operator<<(float& val) { linker->serial(val);	return*this; };
-	Archive& operator<<(double& val) { linker->serial(val);	return*this; };
-	Archive& operator<<(uint& val) { linker->serial(val);	return*this; };
-	Archive& operator<<(long& val) { linker->serial(val);	return*this; };
-	Archive& operator<<(ulong& val) { linker->serial(val);	return*this; };
-	Archive& operator<<(bool& val) { linker->serial(val);	return*this; };
-	Archive& operator<<(char& val) { linker->serial(val);	return*this; };
-	Archive& operator<<(string& val) { linker->serial(val); return*this; };
+	Archive& operator<<(int& val) { mLinker->serial(val);	return*this; };
+	Archive& operator<<(float& val) { mLinker->serial(val);	return*this; };
+	Archive& operator<<(double& val) { mLinker->serial(val);	return*this; };
+	Archive& operator<<(uint& val) { mLinker->serial(val);	return*this; };
+	Archive& operator<<(long& val) { mLinker->serial(val);	return*this; };
+	Archive& operator<<(ulong& val) { mLinker->serial(val);	return*this; };
+	Archive& operator<<(bool& val) { mLinker->serial(val);	return*this; };
+	Archive& operator<<(char& val) { mLinker->serial(val);	return*this; };
+	Archive& operator<<(string& val) { mLinker->serial(val); return*this; };
 
 	Archive& operator<<(void* data)
 	{
 		size_t size;
-		if (linker->isLoading())
+		if (mLinker->isLoading())
 		{
-			size = *(size_t*)(linker->arr.mData + linker->arr.mIndex - sizeof(size_t));
+			size = *(size_t*)(mLinker->arr.mData + mLinker->arr.mIndex - sizeof(size_t));
 		}
 		else
 		{
-			size = *(size_t*)(linker->arr.mData + linker->arr.mSize - sizeof(size_t));
+			size = *(size_t*)(mLinker->arr.mData + mLinker->arr.mSize - sizeof(size_t));
 		}
-		linker->serial(data, size);
+		mLinker->serial(data, size);
 		return*this;
 	};
 
-	virtual bool isLoading() { return linker->isLoading(); }
+	void load(const string& file_path = "")
+	{
+		fstream f(file_path.empty() ? mFilePath : file_path, ios::in | ios::binary);
+		if (!f.is_open())debug("Wrong when open file for read!!");
+		size_t size = 0;
+		f.read((char*)&size, sizeof(size_t));
+		mLinker->resize(size);
+		f.read((char*)mLinker->data(), size);
+		f.close();
+	}
 
-	virtual bool isSaving() { return linker->isSaving(); }
+	void save(const string& file_path = "")
+	{
+		if (mLinker->size() == 0)return;
+		fstream f(file_path.empty() ? mFilePath : file_path, ios::out | ios::binary);
+		if (!f.is_open())debug("Wrong when open file for write!!");
+		size_t size = mLinker->size();
+		f.write((char*)&size, sizeof(size_t));
+		f.write((char*)mLinker->data(), mLinker->size());
+		f.close();
+	}
+
+	virtual bool isLoading() { return mLinker->isLoading(); }
+
+	virtual bool isSaving() { return mLinker->isSaving(); }
 
 };
 
