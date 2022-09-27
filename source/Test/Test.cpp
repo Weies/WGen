@@ -18,7 +18,7 @@ int main()
 	LinkerSave save;
 	Archive ar(&save);
 
-	m.serialize(ar);
+	ar << m;
 
 	load.arr.swap(save.arr);
 
@@ -26,7 +26,7 @@ int main()
 
 	SkeletalMesh mm;
 
-	mm.serialize(ar);
+	ar << mm;
 
 
 

@@ -200,12 +200,6 @@ public:
 	virtual ~Mesh() {}
 
 
-	Archive& serialize(Archive& ar)
-	{
-		ar << mName << mTransform << mDirectory << mMeshes << mTextures;
-		return ar;
-	}
-
 	string format() {
 		size_t p = mName.find_last_of('.');
 		if (p != string::npos)return mName.substr(p + 1);
@@ -362,6 +356,11 @@ protected:
 	}
 };
 
+inline Archive& operator<<(Archive& ar, Mesh& m)
+{
+	ar << m.mName << m.mTransform << m.mDirectory << m.mMeshes << m.mTextures;
+	return ar;
+}
 
 class SkeletalMesh :public Mesh
 {
@@ -768,3 +767,9 @@ public:
 
 
 };
+
+inline Archive& operator<<(Archive& ar, SkeletalMesh& m)
+{
+	ar << m.mName << m.mTransform << m.mDirectory << m.mMeshes << m.mTextures;
+	return ar;
+}
