@@ -52,7 +52,7 @@ public:
 
 		for (auto& comp : mComponents)
 		{
-			comp->;
+			//comp->;
 		}
 	}
 

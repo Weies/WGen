@@ -22,11 +22,7 @@ using pt = point<float>;
 //Warning: 写到文件的结构不要随意更改数据出现的顺序
 /*--------------------------------------------*/
 
-struct ImportTexHead
-{
-	std::string mPath;
-	TextureType mType{ TextureType::texture_unknown };
-};
+
 
 
 inline Archive& operator<<(Archive& ar, ImportTexHead& v)
@@ -188,7 +184,7 @@ inline Archive& operator<<(Archive& ar, MeshPatch& v)
 class Mesh
 {
 public:
-	vector<ImportTexHead>		mTextures;
+	vector<ImportTexHead>	mTextures;
 	vector<MeshPatch>		mMeshes;
 	string					mDirectory;//文件目录
 	string					mName;//文件名

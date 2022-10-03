@@ -1,6 +1,7 @@
 #pragma once
 #include"../log/debuger.h"
-
+#include"core/core.h"
+using namespace std;
 
 struct sarray
 {
@@ -229,8 +230,10 @@ public:
 	virtual void serial(ulong& val) = 0;
 	virtual void serial(bool& val) = 0;
 	virtual void serial(char& val) = 0;
+	virtual void serial(ullong& val) = 0;
 	virtual void serial(void* data, size_t size) = 0;
 	virtual void serial(string& s) = 0;
+
 };
 
 class LinkerLoad :public Linker
@@ -250,6 +253,7 @@ public:
 	virtual void serial(ulong& val) { arr >> val; };
 	virtual void serial(bool& val) { arr >> val; };
 	virtual void serial(char& val) { arr >> val; };
+	virtual void serial(ullong& val) { arr >> val; };
 	virtual void serial(void* data, size_t size) { arr.read(data, size); };
 	virtual void serial(string& s)
 	{
@@ -275,6 +279,7 @@ public:
 	virtual void serial(ulong& val) { arr << val; };
 	virtual void serial(bool& val) { arr << val; };
 	virtual void serial(char& val) { arr << val; };
+	virtual void serial(ullong& val) { arr << val; };
 	virtual void serial(void* data, size_t size) { arr.write(data, size); };
 	virtual void serial(string& s)
 	{
@@ -299,6 +304,7 @@ public:
 	Archive& operator<<(ulong& val) { mLinker->serial(val);	return*this; };
 	Archive& operator<<(bool& val) { mLinker->serial(val);	return*this; };
 	Archive& operator<<(char& val) { mLinker->serial(val);	return*this; };
+	Archive& operator<<(ullong& val) { mLinker->serial(val);	return*this; };
 	Archive& operator<<(string& val) { mLinker->serial(val); return*this; };
 
 	Archive& operator<<(void* data)
@@ -318,7 +324,7 @@ public:
 
 	void load(const string& file_path = "")
 	{
-		fstream f(file_path.empty() ? mFilePath : file_path, ios::in | ios::binary);
+		std::fstream f(file_path.empty() ? mFilePath : file_path, ios::in | ios::binary);
 		if (!f.is_open())debug("Wrong when open file for read!!");
 		size_t size = 0;
 		f.read((char*)&size, sizeof(size_t));
@@ -330,7 +336,7 @@ public:
 	void save(const string& file_path = "")
 	{
 		if (mLinker->size() == 0)return;
-		fstream f(file_path.empty() ? mFilePath : file_path, ios::out | ios::binary);
+		std::fstream f(file_path.empty() ? mFilePath : file_path, ios::out | ios::binary);
 		if (!f.is_open())debug("Wrong when open file for write!!");
 		size_t size = mLinker->size();
 		f.write((char*)&size, sizeof(size_t));

@@ -70,6 +70,12 @@ public:
 	us bit = 0; us out = -1;
 };
 
+struct ImportTexHead
+{
+	std::string mPath;
+	TextureType mType{ TextureType::texture_unknown };
+};
+
 
 using Transform = SQT;
 

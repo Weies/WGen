@@ -34,8 +34,9 @@ public:
 				str[i] = new char[100];
 			}
 			int ers = glfwGetError((const char**)str);
-			for (int i = 0; i < min(ers, 10); ++i)debug << str[i];
+			for (int i = 0; i < min(ers, 10); ++i)debug(str[i]);
 			ASSERT(win, "failed when GLFW create window");
+
 		}
 		if (!border)setNoBorder();
 		glEnable(GL_MULTISAMPLE);
@@ -120,7 +121,7 @@ public:
 
 	void loop(const std::function<void(void)>& fun) {
 		clockTime = clock(); lastTime = gameTime;
-		eventAble = true; 
+		eventAble = true;
 		while (!glfwWindowShouldClose(win))
 		{
 			timor.updateTime();
