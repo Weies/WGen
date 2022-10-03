@@ -24,8 +24,21 @@ public:
 	string		mOriginalFilePath;
 	Transform	mTransform;
 
+	vector<SubMeshRes> mMeshes;
 
 
 
 
 };
+
+inline Archive& operator<<(Archive& ar, SubMeshRes& v)
+{
+	ar << v.mName << v.mResIndex << v.mResIndex;
+	return ar;
+}
+
+inline Archive& operator<<(Archive& ar, MeshCompRes& v)
+{
+	ar << v.mName << v.mOriginalFilePath << v.mTransform << v.mMeshes;
+	return ar;
+}
