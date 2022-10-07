@@ -3,7 +3,6 @@
 /bin/*
 /Debug/*
 /x64/*
-/asset/*
 *.exe
 *.pdb
 *.dro
