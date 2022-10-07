@@ -18,12 +18,12 @@ public:
 		if (m.mMeshes.size() == 0)return;
 		auto& cam = SceneManager::get().mScene->mCamera;
 		shader.setMat4("transform", cam->getBlock().mPVTransform * m.mModelTransform);
-		shader.setMat4("model", m.mModelTransform);
+
 
 		for (auto& mesh : m.mMeshes) {
 			SceneBuffer::memory(mesh.mVBH)->bind();
 			SceneBuffer::memory(mesh.mIBH)->bind();
-
+			shader.setMat4("model", m.mModelTransform * mesh.mTransform);
 			int bind_tex = 1; const auto& mate = mesh.mMaterial;
 
 			if (mate.mBaseColorHandle.mHandle) {

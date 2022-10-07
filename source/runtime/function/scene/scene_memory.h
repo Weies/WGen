@@ -6,10 +6,11 @@
 
 class SceneMemory {
 public:
-	SceneMemory() :mSize(0), mData(0) {}
-	SceneMemory(size_t size, void* data) :mSize(size), mData(data) {}
 	size_t		mSize;
 	void* mData;
+	SceneMemory() :mSize(0), mData(0) {}
+	SceneMemory(size_t size, void* data) :mSize(size), mData(data) {}
+
 	virtual void sync()const = 0;
 	virtual void bind()const = 0;
 	virtual void setup() = 0;
@@ -17,6 +18,7 @@ public:
 		delete[] mData; mData = 0; mSize = 0;
 	}
 };
+
 #define Constructor(name) name(){} name(size_t size, void* data):SceneMemory(size,data){}
 class VertexMemory :public SceneMemory {
 public:

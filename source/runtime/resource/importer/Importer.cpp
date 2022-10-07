@@ -186,7 +186,7 @@ void processMesh(MeshData& m, aiMesh* mesh, const aiScene* scene, map<string, in
 	string mesh_name = mesh->mName.C_Str();
 	mesh_name = Encoder::getGBK(mesh_name);
 
-	m.mMeshes.push_back({ mesh_name,vertices,indices,textures });
+	m.mMeshes.push_back({ mesh_name,{},vertices,indices,textures });
 }
 
 void processNode(MeshData& m, aiNode* node, const aiScene* scene, map<string, int>& bone_id, llong mask)
@@ -262,7 +262,7 @@ bool Importer::Import(MeshData& m, const string& path, llong mask) {
 		debug << "ERROR::ASSIMP:: " << importer->GetErrorString() << endl;
 		return false;
 	}
-	m.mPath = path;//.substr(0, path.find_last_of('/'));
+	m.mOrginalFilePath = path;
 	m.mName = path.substr(path.find_last_of('/') + 1);
 	m.mName = Encoder::getGBK(m.mName);
 

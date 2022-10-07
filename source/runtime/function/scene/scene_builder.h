@@ -1,13 +1,11 @@
 #pragma once
 #include"scene_buffer.h"
-#include"resource/importer/Importer.h"
-
+#include"resource/asset_manager.h"
 
 //SceneBuilder 一定会分配新内存，但是SceneManager可能不分配新内存
 //Build scene的两种方式：从文件生成 vs. 代码直接生成
 class SceneBuilder {
 public:
-	static Importer imp;
 
 	static ModelHandle loadModel(const ModelDesc& desc) {
 		auto& model_file = desc.mModelFile;
@@ -18,46 +16,45 @@ public:
 		/*预定义对象，直接用代码生成*///[Sphere{36}]
 		if (model_file[0] == '[')
 		{
-			//const char* p = &mesh_file[1];
-			int p = model_file.find('{');
-			string ob = string(model_file.begin() + 1, model_file.begin() + p);
-			if (ob == "Sphere") {
-				int seg = stoi(model_file.substr(p + 5));
-				MeshHandle mesh_handle = buildSphere(seg);
-
-
-				//model_handle.mMeshHandles[0].
-				if (desc.mMeshDescs.size() != 0)
-					mesh_handle.mMTH = loadMaterial(desc.mMeshDescs[0].mMaterialDescs);
-
-				model_handle.mMeshHandles.push_back(mesh_handle);
-				return model_handle;
-			}
-
-			return ModelHandle{};
+			return parsePreDefModel(desc);
 		}
-
 
 
 		/*从文件中加载模型*/
 
-		//if (model_file.substr(model_file.find_last_of('.') + 1) == "dro")
-		//{
-		//	//imp.readDRO(model_handle, model_file);
-		//}
-		//else imp.Import(model_handle, model_file);
+		MeshData* data = AssetManager::get().loadAsset<MeshData>(desc.mModelFile);
 
-		if (model_handle.mMeshHandles.size() != desc.mMeshDescs.size())
+		model_handle.mMeshHandles.resize(desc.mMeshDescs.size());
+		auto& mhd = model_handle.mMeshHandles;
+		for (int i = 0; i < mhd.size(); ++i)
 		{
-			model_handle.mMeshHandles.resize(desc.mMeshDescs.size());
-		}
-
-		for (int i = 0; i < model_handle.mMeshHandles.size(); ++i)
-		{
-			model_handle.mMeshHandles[i].mMTH = loadMaterial(desc.mMeshDescs[i].mMaterialDescs);
+			mhd[i].mVBH = SceneBuffer::genVertexBuffer(data->mMeshes[i].mVertices);
+			mhd[i].mIBH = SceneBuffer::genIndexBuffer(data->mMeshes[i].mIndices);
+			//mhd[i].mMTH = loadMaterial(desc.mMeshDescs[i].mMaterialDescs);
 		}
 
 		return model_handle;
+	}
+
+	static ModelHandle parsePreDefModel(const ModelDesc& desc)
+	{
+		ModelHandle model_handle;
+		const string& model_file = desc.mModelFile;
+		int p = model_file.find('{');
+		string ob = string(model_file.begin() + 1, model_file.begin() + p);
+		if (ob == "Sphere") {
+			int seg = stoi(model_file.substr(p + 5));
+			MeshHandle mesh_handle = buildSphere(seg);
+
+			//model_handle.mMeshHandles[0].
+			if (desc.mMeshDescs.size() != 0)
+				mesh_handle.mMTH = loadMaterial(desc.mMeshDescs[0].mMaterialDescs);
+
+			model_handle.mMeshHandles.push_back(mesh_handle);
+			return model_handle;
+		}
+
+		return ModelHandle{};
 	}
 
 	static ModelHandle loadModel(const string& model_file)

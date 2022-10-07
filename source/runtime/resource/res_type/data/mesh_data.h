@@ -86,6 +86,7 @@ class SubMeshData
 public:
 
 	string					mName;
+	Transform				mTransform;
 	vector<vertex>			mVertices;
 	vector<uint>			mIndices;
 	vector<ImportTexHead>	mTextures;
@@ -96,31 +97,27 @@ class MeshData :public Asset
 {
 public:
 	RegisterAsset(MeshData);
-
+	string					mOrginalFilePath;
 	vector<SubMeshData>		mMeshes;
 	vector<ImportTexHead>	mTextures;
 };
 
 inline Archive& operator<<(Archive& ar, ImportTexHead& v)
 {
-	ar << v.mPath << v.mType;
-	return ar;
+	return ar << v.mPath << v.mType;
 }
 
 inline Archive& operator<<(Archive& ar, vertex& v)
 {
-	ar << v.mPosition << v.mNormal << v.mTexCoord << v.mTangent << v.mBitangent << v.mBoneIds << v.mBoneWeights;
-	return ar;
+	return ar << v.mPosition << v.mNormal << v.mTexCoord << v.mTangent << v.mBitangent << v.mBoneIds << v.mBoneWeights;
 }
 
 inline Archive& operator<<(Archive& ar, SubMeshData& v)
 {
-	ar << v.mName << v.mVertices << v.mIndices << v.mTextures;
-	return ar;
+	return ar << v.mName << v.mTransform << v.mVertices << v.mIndices << v.mTextures;
 }
 
 inline Archive& operator<<(Archive& ar, MeshData& v)
 {
-	ar << v.mName << v.mPath << v.mMeshes;
-	return ar;
+	return ar << v.mName << v.mPath << v.mOrginalFilePath << v.mMeshes;
 }

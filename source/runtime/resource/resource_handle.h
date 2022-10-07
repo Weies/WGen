@@ -77,11 +77,14 @@ struct MaterialHandle
 	uid hash() const { return mBaseColorHandle.hash(); }
 };
 
-struct MeshHandle {
+struct MeshHandle 
+{
 	VertexBufferHandle		mVBH;
 	IndexBufferHandle		mIBH;
 	MaterialHandle			mMTH;
 	SkeletonBindingHandle	mSBH;
+	Transform				mTransform;
+
 	bool operator==(const MeshHandle& otr)const {
 		return otr.mVBH == mVBH;
 	}
@@ -102,14 +105,11 @@ struct std::hash<MaterialHandle> {
 };
 
 
-struct ModelHandle;
-
-
-
 // one mesh handle must have one material handle
 struct ModelHandle
 {
 	vector<MeshHandle>		mMeshHandles;
+	Transform				mTransform;
 
 	ModelHandle() = default;
 

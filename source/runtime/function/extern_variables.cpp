@@ -12,4 +12,3 @@ double globals::clockTime;
 double globals::frameps = 60.0f;//记录平均的帧率
 double globals::frameTime = 10;
 bool Window::first_win = false;
-Importer SceneBuilder::imp;

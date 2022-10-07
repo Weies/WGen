@@ -74,7 +74,7 @@ public:
 				render_mesh.mVBH = model_handle.mMeshHandles[i].mVBH;
 				render_mesh.mIBH = model_handle.mMeshHandles[i].mIBH;
 				render_mesh.mMaterial = model_handle.mMeshHandles[i].mMTH;
-
+				render_mesh.mTransform = model_handle.mMeshHandles[i].mTransform;
 			}
 
 			if (go_desc.mHasAnim)

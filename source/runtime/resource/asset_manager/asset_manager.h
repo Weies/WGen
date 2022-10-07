@@ -24,9 +24,10 @@ public:
 	}
 
 	template<class AssetType>
-	void saveAsset(const string& asset_path, const AssetType& asset)
+	void saveAsset(const string& asset_path, AssetType& asset)
 	{
 		Archive ar(new LinkerSave);
+		asset.mPath = asset_path;
 		string type = asset.type();
 		ar << type << asset;
 		ar.save(asset_path);

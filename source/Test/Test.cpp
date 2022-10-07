@@ -1,41 +1,35 @@
 #include"Engine.h"
 #include"function/physics/collision_dectect.h"
 #include"resource/importer/importer.h"
-
+#include"resource/asset_manager.h"
 
 
 #include<iostream>
 
 int main()
 {
-
+	LinkerLoad load;
+	LinkerSave save;
+	Archive ar(&save);
 	Importer imp;
 	MeshData m;
 	imp.Import(m, "asset/models/yuan/ying/ying.pmx");
-
-
-
-	LinkerLoad load;
-	LinkerSave save;
-
-	Archive ar(&save);
-
-
-
-	//WorldManager::get().l
-
-	//ar.load("asset/1.asset");
-	//ar << m;
-
-	////ar.save("asset/1.asset");
-
-	//load.arr.swap(save.arr);
-
-	//ar.mLinker = &load;
-
-	//MeshData mm;
-
-	//ar << mm;
+	AssetManager::get().saveAsset<MeshData>("asset/ying_mesh.asset", m);
+	MeshData* mesh = AssetManager::get().loadAsset<MeshData>("asset/ying_mesh.asset");
+	GObject* go = new GObject;
+	go->addComponent(new TransformComponent);
+	auto* mc = new MeshComponent;
+	mc->setMesh(*mesh);
+	mc->mIsTickInEditorMode = true;
+	go->addComponent(mc);
+	auto& world = WorldManager::get();
+	Level* mCurLevel = new Level;
+	mCurLevel->addGObject(go);
+	mCurLevel->mName = "Level01";
+	mCurLevel->mPath = "asset/default_level.level";
+	world.mCurLevel = mCurLevel;
+	world.mLevels.push_back(mCurLevel);
+	world.saveWorld("asset/default_world.world");
 
 
 

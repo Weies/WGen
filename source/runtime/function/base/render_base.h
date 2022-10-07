@@ -1,6 +1,8 @@
 #pragma once
 #include"core/log/debuger.h"
 #include"resource/resource_handle.h"
+
+
 enum class RenderStrategy {
 	Undefined = 0,
 	NonPBR_PhongShading,
@@ -16,7 +18,7 @@ enum class RenderStrategy {
 
 class RenderMesh {
 public:
-
+	Transform				mTransform;
 	SkeletonBindingHandle	mSBH;
 	VertexBufferHandle		mVBH;
 	IndexBufferHandle		mIBH;

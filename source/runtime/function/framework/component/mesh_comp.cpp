@@ -16,7 +16,7 @@ void MeshComponent::tick(float deltaTime)
 	ret.mName = mParent->mName;
 	ret.mGOID = mParent->mId;
 
-	ret.mModelDesc.mModelFile = mMesh.mOriginalFilePath;
+	ret.mModelDesc.mModelFile = mMesh.mPath;
 	mat4 go_trans = trans_comp->mTransform;
 	ret.mModelTransform = go_trans;
 	if (anim_comp)
@@ -25,33 +25,13 @@ void MeshComponent::tick(float deltaTime)
 		//ret.mPose = anim_comp->getPose();
 	}
 
-	//MeshData* data = AssetManager::get().loadAsset<MeshData>(mMesh.mOriginalFilePath);
-
 	for (auto& mesh : mMesh.mMeshes) {
 		MeshDesc mdesc;
 		mdesc.mMeshName = mesh.mName;
-		mdesc.mTransform = go_trans * mesh.mTransform;
+		mdesc.mTransform = mesh.mTransform;
 		ret.mModelDesc.mMeshDescs.push_back(mdesc);
 	}
 	SceneManager::get().addObject(move(ret));
 }
-
-//void MeshComponent::finalize(const Json& j)
-//{
-//	//mMeshFile = j["Ref"].string_value();
-//
-//
-//	//Json::array meshes = j["Meshes"].array_items();
-//	//for (auto& mesh : meshes)
-//	//{
-//	//	MeshDesc desc;
-//	//	desc.mMeshName = mesh["MeshName"].string_value();
-//	//	desc.mTransform = JsonHelper::parseTransform(mesh["Transform"]);
-//	//	desc.mMaterialDescs = JsonHelper::parseMaterial(mesh["MaterialDesc"]);
-//
-//	//	//mRawMeshes.push_back(desc);
-//	//}
-//
-//}
 
 

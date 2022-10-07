@@ -22,6 +22,10 @@ public:
 		mModels.resize(1);
 		mModels[0].mMeshes.resize(0);
 	}
+	void setCamera(Camera* camera)
+	{
+		mCamera = camera;
+	}
 
 	vector<RenderModel> mModels;
 	Camera* mCamera;

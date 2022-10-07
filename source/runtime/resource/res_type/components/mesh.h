@@ -5,33 +5,28 @@
 
 
 
-class SubMeshRes :public CompRes
+class SubMeshRes
 {
 public:
 	string		mName;
 	Transform	mTransform;
-	uint		mResIndex;
 };
 
 class MeshCompRes :public CompRes
 {
 public:
-
-	string		mOriginalFilePath;
+	string		mPath;
 	Transform	mTransform;
 
 	vector<SubMeshRes> mMeshes;
-
 };
 
 inline Archive& operator<<(Archive& ar, SubMeshRes& v)
 {
-	ar << v.mType << v.mResIndex << v.mResIndex;
-	return ar;
+	return ar << v.mName << v.mTransform;
 }
 
 inline Archive& operator<<(Archive& ar, MeshCompRes& v)
 {
-	ar << v.mType << v.mOriginalFilePath << v.mTransform << v.mMeshes;
-	return ar;
+	return ar << v.mType << v.mPath << v.mTransform << v.mMeshes;
 }

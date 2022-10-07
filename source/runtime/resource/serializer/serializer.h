@@ -122,6 +122,7 @@ public:
 
 	void load(const string& file_path = "")
 	{
+		clear();
 		std::fstream f(file_path.empty() ? mFilePath : file_path, ios::in | ios::binary);
 		if (!f.is_open())debug("Wrong when open file for read!!");
 		size_t size = 0;
