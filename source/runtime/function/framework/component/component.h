@@ -1,6 +1,7 @@
 #pragma once
 #include"function/base/base_include.h"
-#include"resource/json_helper.h"
+#include"resource/serializer.h"
+
 
 class GObject;
 class ComponentHelper;
@@ -22,15 +23,13 @@ public:
 
 	virtual void serial(Archive& ar)
 	{
-
+		ar << mIsTickInEditorMode;
 	}
 
 private:
 
 	friend class GObject;
 	friend class ComponentHelper;
-
-	virtual void finalize(const Json& j) = 0;
 
 	void _tick(float deltaTime) {
 		if (mIsTickInEditorMode || !isEditorMode)
@@ -45,18 +44,9 @@ class ComponentHelper :public Singleton<ComponentHelper>
 public:
 	map<string, void* (*)()> mComponents;
 
-
-
-	Component* initComponent(const Json& comp_json)
+	Component* newComponent(const string& comp_type)
 	{
-		const string& type = comp_json["Type"].string_value();
-
-		Component* comp = (Component*)mComponents[type]();
-
-		comp->finalize(comp_json);
-
-		return comp;
-		//if()
+		return (Component*)mComponents[comp_type]();
 	}
 };
 
@@ -90,14 +80,10 @@ class TransformComponent :public Component {
 public:
 	TransformComponent() {}
 
-	virtual void finalize(const Json& j) override
-	{
-		mTransform = JsonHelper::parseTransform(j);
-	}
 	virtual void serial(Archive& ar) override
 	{
 		Component::serial(ar);
-
+		ar << mTransform;
 	}
 
 	RegisterComponent(Transform);

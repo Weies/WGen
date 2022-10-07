@@ -1,13 +1,14 @@
-#include"Importer.h"
+#include "Importer.h"
 #include "stbi/stb_image.h"
 #include "stbi/stb_image_resize.h"
 #include "assimp/Importer.hpp"        //assimp库头文件
 #include "assimp/Exporter.hpp"
 #include "assimp/scene.h"
 #include "assimp/postprocess.h"
-#include "../ui/font.h"
-#include "mesh.h"
-
+#include "core/core.h"
+#include "platform/file_system/file.h"
+#include <queue>
+using std::queue;
 void tralMesh(aiMesh* mesh, const aiScene* scene) {
 	debug << "Mesh at 0x" << mesh << " has: " << endl
 		<< mesh->mNumVertices << " vertices;" << endl
@@ -78,7 +79,7 @@ void traverseScene(aiNode* node, const aiScene* scene, int lv, int its) {
 //}
 
 
-vector<ImportTexHead> importTextures(Mesh& m, aiMaterial* mat, TextureType tex_type, bool load_from_file = true)
+vector<ImportTexHead> importTextures(MeshData& m, aiMaterial* mat, TextureType tex_type, bool load_from_file = true)
 {
 	vector<ImportTexHead> textures;
 	int end = mat->GetTextureCount(cast(aiTextureType, tex_type));
@@ -92,12 +93,12 @@ vector<ImportTexHead> importTextures(Mesh& m, aiMaterial* mat, TextureType tex_t
 
 		for (int j = 0; j < m.mTextures.size(); ++j) {
 			if (fileName(name) == fileName(m.mTextures[j].mPath)) {
-				textures.push_back({ m.mDirectory + '/' + name,tex_type });
+				textures.push_back({ FileHelper::getDirectory(m.mPath) + '/' + name,tex_type });
 				skip = true; break;
 			}
 		}
 		if (!skip) {
-			ImportTexHead head = { m.mDirectory + '/' + name,tex_type };
+			ImportTexHead head = { FileHelper::getDirectory(m.mPath) + '/' + name,tex_type };
 			m.mTextures.push_back(head);
 			textures.push_back(head);
 		}
@@ -105,7 +106,7 @@ vector<ImportTexHead> importTextures(Mesh& m, aiMaterial* mat, TextureType tex_t
 	return textures;
 }
 
-void processMesh(SkeletalMesh& m, aiMesh* mesh, const aiScene* scene, map<string, int>& bone_id, llong mask)
+void processMesh(MeshData& m, aiMesh* mesh, const aiScene* scene, map<string, int>& bone_id, llong mask)
 {
 	vector<vertex> vertices; vector<uint> indices; vector<ImportTexHead> textures;
 	//导入网格
@@ -133,33 +134,33 @@ void processMesh(SkeletalMesh& m, aiMesh* mesh, const aiScene* scene, map<string
 			}
 			vertices.push_back(vertex);
 		}
-		if (mesh->HasBones()) {
-			for (int j = 0; j < mesh->mNumBones; ++j) {
-				auto& bone = mesh->mBones[j];
-				string name = string(bone->mName.C_Str(), bone->mName.length);
-				name = Encoder::getGBK(name);;
-				if (bone_id.find(name) != bone_id.end()) {
-					int b_id = bone_id[name];
-					m.mSkeleton[b_id].mOffsetTransform = (*(mat4*)&bone->mOffsetMatrix).t();
-					for (int i = 0; i < mesh->mBones[j]->mNumWeights; ++i) {
-						int id = mesh->mBones[j]->mWeights[i].mVertexId;
-						for (int l = 0; l < 4; ++l) {
-							if (vertices[id].mBoneWeights[l] == 0.0f) {
-								vertices[id].mBoneWeights[l] = mesh->mBones[j]->mWeights[i].mWeight;
-								vertices[id].mBoneIds[l] = b_id;
-								break;
-							}
-							//ASSERT(l != 3);
-						}
-					}
-					//ASSERT(bone_id.find(name) != bone_id.end());
-				}
-				//else __debugbreak();
-			}
-			for (int i = 0; i < vertices.size(); ++i) {
-				vertices[i].mBoneWeights = vertices[i].mBoneWeights.weightlize();
-			}
-		}
+		//if (mesh->HasBones()) {
+		//	for (int j = 0; j < mesh->mNumBones; ++j) {
+		//		auto& bone = mesh->mBones[j];
+		//		string name = string(bone->mName.C_Str(), bone->mName.length);
+		//		name = Encoder::getGBK(name);;
+		//		if (bone_id.find(name) != bone_id.end()) {
+		//			int b_id = bone_id[name];
+		//			m.mSkeleton[b_id].mOffsetTransform = (*(mat4*)&bone->mOffsetMatrix).t();
+		//			for (int i = 0; i < mesh->mBones[j]->mNumWeights; ++i) {
+		//				int id = mesh->mBones[j]->mWeights[i].mVertexId;
+		//				for (int l = 0; l < 4; ++l) {
+		//					if (vertices[id].mBoneWeights[l] == 0.0f) {
+		//						vertices[id].mBoneWeights[l] = mesh->mBones[j]->mWeights[i].mWeight;
+		//						vertices[id].mBoneIds[l] = b_id;
+		//						break;
+		//					}
+		//					//ASSERT(l != 3);
+		//				}
+		//			}
+		//			//ASSERT(bone_id.find(name) != bone_id.end());
+		//		}
+		//		//else __debugbreak();
+		//	}
+		//	for (int i = 0; i < vertices.size(); ++i) {
+		//		vertices[i].mBoneWeights = vertices[i].mBoneWeights.weightlize();
+		//	}
+		//}
 		for (unsigned int i = 0; i < mesh->mNumFaces; i++) {
 			aiFace& face = mesh->mFaces[i];
 			for (unsigned int j = 0; j < face.mNumIndices; j++)
@@ -182,15 +183,13 @@ void processMesh(SkeletalMesh& m, aiMesh* mesh, const aiScene* scene, map<string
 	vector<ImportTexHead> heightMaps = importTextures(m, material, texture_height, load_from_file);
 	textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
 
-	MeshPatch* mee = new MeshPatch(vertices, indices, textures);
-	mee->mName = mesh->mName.C_Str();
-	mee->mName = Encoder::getGBK(mee->mName);
-	if (mee->mName == "")mee->mName = "No_Name";
-	m.pushMesh(*mee);
-	delete mee;
+	string mesh_name = mesh->mName.C_Str();
+	mesh_name = Encoder::getGBK(mesh_name);
+
+	m.mMeshes.push_back({ mesh_name,vertices,indices,textures });
 }
 
-void processNode(SkeletalMesh& m, aiNode* node, const aiScene* scene, map<string, int>& bone_id, llong mask)
+void processNode(MeshData& m, aiNode* node, const aiScene* scene, map<string, int>& bone_id, llong mask)
 {
 	for (unsigned int i = 0; i < node->mNumMeshes; i++)
 	{
@@ -214,49 +213,48 @@ bool hasBone(const aiScene* scene, aiNode* no) {
 	return false;
 }
 
-void processJoint(SkeletalMesh& m, aiNode* node, const aiScene* scene, map<string, int>& bone_id)
+void processJoint(MeshData& m, aiNode* node, const aiScene* scene, map<string, int>& bone_id)
 {
-	queue<aiNode*> q; q.push(node);
-	queue<int> father; father.push(-1);
-	int idx = 0;
-	Joint* jos = new Joint[500]; bool first = true;
-	for (int i = 0; i < 500; ++i) {
-		jos[i].mCurTransform = mat4(1.0);
-	}
-	aiNode* no;
-	while (!q.empty()) {
-		no = q.front(); q.pop();
-		auto& jo = jos[idx];
-		string name = string(no->mName.C_Str(), no->mName.length);
-		while (name[0] == '<' || name.find('$') < 1000) {
-			jo.mCurTransform = jo.mCurTransform * (*(mat4*)&no->mTransformation).t();
-			no = no->mChildren[0]; name = no->mName.C_Str();
-		}
-		name = Encoder::getGBK(name);
-		//if (bone_id.find(name) != bone_id.end()) __debugbreak();//debug("failed");//
-		bone_id.insert({ name,bone_id.size() });
-		jo.mName = name;
-		jo.mParentId = father.front(); father.pop();
-		/*if (jo.mParentId != -1)
-			jo.transform = jos[jo.mParentId].transform * jo.cur * (*(mat4*)&no->mTransformation).t();
-		else jo.transform = jo.cur * (*(mat4*)&no->mTransformation).t();*/
+	//queue<aiNode*> q; q.push(node);
+	//queue<int> father; father.push(-1);
+	//int idx = 0;
+	//Joint* jos = new Joint[500]; bool first = true;
+	//for (int i = 0; i < 500; ++i) {
+	//	jos[i].mCurTransform = mat4(1.0);
+	//}
+	//aiNode* no;
+	//while (!q.empty()) {
+	//	no = q.front(); q.pop();
+	//	auto& jo = jos[idx];
+	//	string name = string(no->mName.C_Str(), no->mName.length);
+	//	while (name[0] == '<' || name.find('$') < 1000) {
+	//		jo.mCurTransform = jo.mCurTransform * (*(mat4*)&no->mTransformation).t();
+	//		no = no->mChildren[0]; name = no->mName.C_Str();
+	//	}
+	//	name = Encoder::getGBK(name);
+	//	//if (bone_id.find(name) != bone_id.end()) __debugbreak();//debug("failed");//
+	//	bone_id.insert({ name,bone_id.size() });
+	//	jo.mName = name;
+	//	jo.mParentId = father.front(); father.pop();
+	//	/*if (jo.mParentId != -1)
+	//		jo.transform = jos[jo.mParentId].transform * jo.cur * (*(mat4*)&no->mTransformation).t();
+	//	else jo.transform = jo.cur * (*(mat4*)&no->mTransformation).t();*/
 
-		for (int i = 0; i < no->mNumChildren; ++i) {
-			q.push(no->mChildren[i]); father.push(idx);
-		}
-		++idx;
-	}
-	m.mSkeleton = Skeleton(jos, idx);
-	m.mNumBones = idx;
-	delete[] jos;
+	//	for (int i = 0; i < no->mNumChildren; ++i) {
+	//		q.push(no->mChildren[i]); father.push(idx);
+	//	}
+	//	++idx;
+	//}
+	//m.mSkeleton = Skeleton(jos, idx);
+	//m.mNumBones = idx;
+	//delete[] jos;
 }
 
 Importer::Importer() :hand(0), imp(new Assimp::Importer) {}
 
-bool Importer::Import(SkeletalMesh& m, const string& path, llong mask) {
+bool Importer::Import(MeshData& m, const string& path, llong mask) {
 	if (hand)delete (aiScene*)hand;
 	if (imp)delete imp, imp = new Assimp::Importer;
-	m.clear();
 	Assimp::Importer* importer = (Assimp::Importer*)imp;
 	const aiScene* scene = importer->ReadFile(path, mask);
 	hand = (void*)scene;
@@ -264,20 +262,21 @@ bool Importer::Import(SkeletalMesh& m, const string& path, llong mask) {
 		debug << "ERROR::ASSIMP:: " << importer->GetErrorString() << endl;
 		return false;
 	}
-	m.mDirectory = path.substr(0, path.find_last_of('/'));
+	m.mPath = path;//.substr(0, path.find_last_of('/'));
 	m.mName = path.substr(path.find_last_of('/') + 1);
 	m.mName = Encoder::getGBK(m.mName);
 
+	map<string, int> bone_id;
+	//if (::hasBone(scene, scene->mRootNode) && (mask & LoadAnimations)) {
+	//	//最后一个节点是骨骼
+	//	processJoint(m, scene->mRootNode->mChildren[scene->mRootNode->mNumChildren - 1], scene, m.mBoneIdMap);
+	//}
+	//else m.mSkeleton = Skeleton(0), m.mNumBones = 0;
 
-	if (::hasBone(scene, scene->mRootNode) && (mask & LoadAnimations)) {
-		//最后一个节点是骨骼
-		processJoint(m, scene->mRootNode->mChildren[scene->mRootNode->mNumChildren - 1], scene, m.mBoneIdMap);
-	}
-	else m.mSkeleton = Skeleton(0), m.mNumBones = 0;
 
-	processNode(m, scene->mRootNode, scene, m.mBoneIdMap, mask);
+	processNode(m, scene->mRootNode, scene, bone_id, mask);
 
-	if (scene->HasAnimations() && (mask & LoadAnimations)) {
+	/*if (scene->HasAnimations() && (mask & LoadAnimations)) {
 		for (int i = 0; i < scene->mNumAnimations; ++i) {
 			Animation anim;
 			auto& an = scene->mAnimations[i];
@@ -335,7 +334,7 @@ bool Importer::Import(SkeletalMesh& m, const string& path, llong mask) {
 			}
 			else jos[i].mLocalTransform = jos[i].mOffsetTransform.inv();
 		}
-	}
+	}*/
 	return true;
 }
 bool Importer::Export(const string& filePath, llong mask, CodeType type) {
@@ -343,7 +342,7 @@ bool Importer::Export(const string& filePath, llong mask, CodeType type) {
 	return !exp.Export((aiScene*)hand, filePath.substr(filePath.find_last_of('.') + 1), filePath, mask);
 }
 
-aiMesh* makeMesh(const SkeletalMesh& m, const int meshIdx, bool tran, CodeType type) {
+aiMesh* makeMesh(const MeshData& m, const int meshIdx, bool tran, CodeType type) {
 	aiMesh* pMesh = new aiMesh;
 	auto& vv = m.mMeshes[meshIdx].mVertices; auto& id = m.mMeshes[meshIdx].mIndices;
 	pMesh->mNumVertices = vv.size();
@@ -370,7 +369,7 @@ aiMesh* makeMesh(const SkeletalMesh& m, const int meshIdx, bool tran, CodeType t
 		pMesh->mTextureCoords[0][index].y = v.mTexCoord[1];
 	}
 
-	if (m.hasBone()) {
+	/*if (m.hasBone()) {
 		map<int, vector<aiVertexWeight>> bone_vertex_map;
 		auto& bm = bone_vertex_map;
 		for (int index = 0; index < vv.size(); index++) {
@@ -402,101 +401,103 @@ aiMesh* makeMesh(const SkeletalMesh& m, const int meshIdx, bool tran, CodeType t
 			bone_ptr_ptr[ii] = pBone;
 		}
 	}
-	else pMesh->mNumBones = 0;
+	else pMesh->mNumBones = 0;*/
 
 	return pMesh;
 }
 
-aiMaterial* makeMaterial(const SkeletalMesh& m, int texIdx, bool tran, CodeType tp) {
-	aiMaterial* mat = new aiMaterial();
-	auto& tex = m.mTextures[texIdx];
-	string name = tex.mPath.substr(tex.mPath.find_last_of('/') + 1);
-	if (tran)name = Encoder::convert(gb2312, tp, name);
-	aiString Tname(name);
-	mat->AddProperty(&Tname, AI_MATKEY_NAME);
+aiMaterial* makeMaterial(const MeshData& m, int texIdx, bool tran, CodeType tp) {
+	//aiMaterial* mat = new aiMaterial();
+	//auto& tex = m.mTextures[texIdx];
+	//string name = tex.mPath.substr(tex.mPath.find_last_of('/') + 1);
+	//if (tran)name = Encoder::convert(gb2312, tp, name);
+	//aiString Tname(name);
+	//mat->AddProperty(&Tname, AI_MATKEY_NAME);
 
-	name = tex.mPath; if (tran)name = Encoder::convert(gb2312, tp, name);
-	aiString texture_path(name);
-	mat->AddProperty(&texture_path, AI_MATKEY_TEXTURE(tex.mType, 0));
+	//name = tex.mPath; if (tran)name = Encoder::convert(gb2312, tp, name);
+	//aiString texture_path(name);
+	//mat->AddProperty(&texture_path, AI_MATKEY_TEXTURE(tex.mType, 0));
 
-	//aiColor3D diffuse(0.8, 0.8, 0.8);
-	//mat->AddProperty(&diffuse, 1, AI_MATKEY_COLOR_DIFFUSE);
-	//aiColor3D specular(0.8, 0.8, 0.8);
-	//mat->AddProperty(&specular, 1, AI_MATKEY_COLOR_SPECULAR);
-	//aiColor3D ambient(0.2, 0.2, 0.2);
-	//mat->AddProperty(&ambient, 1, AI_MATKEY_COLOR_AMBIENT);
+	////aiColor3D diffuse(0.8, 0.8, 0.8);
+	////mat->AddProperty(&diffuse, 1, AI_MATKEY_COLOR_DIFFUSE);
+	////aiColor3D specular(0.8, 0.8, 0.8);
+	////mat->AddProperty(&specular, 1, AI_MATKEY_COLOR_SPECULAR);
+	////aiColor3D ambient(0.2, 0.2, 0.2);
+	////mat->AddProperty(&ambient, 1, AI_MATKEY_COLOR_AMBIENT);
 
-	//float opacity = 1.0;
-	//mat->AddProperty(&opacity, 1, AI_MATKEY_OPACITY);
-	//float shininess = 1.0;
-	//mat->AddProperty(&shininess, 1, AI_MATKEY_SHININESS_STRENGTH);
+	////float opacity = 1.0;
+	////mat->AddProperty(&opacity, 1, AI_MATKEY_OPACITY);
+	////float shininess = 1.0;
+	////mat->AddProperty(&shininess, 1, AI_MATKEY_SHININESS_STRENGTH);
 
-	int mapping_uvwsrc = 0;
-	mat->AddProperty(&mapping_uvwsrc, 1, AI_MATKEY_UVWSRC(aiTextureType_DIFFUSE, 0));
+	//int mapping_uvwsrc = 0;
+	//mat->AddProperty(&mapping_uvwsrc, 1, AI_MATKEY_UVWSRC(aiTextureType_DIFFUSE, 0));
 
-	return mat;
+	//return mat;
+	return 0;
 }
 
-bool Importer::Export(const SkeletalMesh& m, const string& filePath, llong mask, CodeType type) {
-	aiScene* sn = new aiScene;
-	string name = m.mDirectory + '/' + m.mName; bool tran = (type != gb2312);
-	if (tran)name = Encoder::convert(gb2312, type, name);
-	sn->mName = name; sn->mNumCameras = 0; sn->mNumLights = 0; sn->mNumTextures = 0;
-	sn->mNumMeshes = m.mMeshes.size(); sn->mNumAnimations = m.mAnims.size();
+bool Importer::Export(const MeshData& m, const string& filePath, llong mask, CodeType type) {
+	//aiScene* sn = new aiScene;
+	//string name = m.mDirectory + '/' + m.mName; bool tran = (type != gb2312);
+	//if (tran)name = Encoder::convert(gb2312, type, name);
+	//sn->mName = name; sn->mNumCameras = 0; sn->mNumLights = 0; sn->mNumTextures = 0;
+	//sn->mNumMeshes = m.mMeshes.size(); sn->mNumAnimations = m.mAnims.size();
 
-	name = m.mName;
-	if (tran)name = Encoder::convert(gb2312, type, name);
-	aiNode* nd = new aiNode; nd->mName.Set(name);
-	sn->mRootNode = nd;
+	//name = m.mName;
+	//if (tran)name = Encoder::convert(gb2312, type, name);
+	//aiNode* nd = new aiNode; nd->mName.Set(name);
+	//sn->mRootNode = nd;
 
-	nd = new aiNode;
-	sn->mRootNode->addChildren(1, &nd);
-	nd->mNumMeshes = m.mMeshes.size();
-	nd->mMeshes = new uint[nd->mNumMeshes];
-	sn->mMeshes = new aiMesh * [sn->mNumMeshes];
+	//nd = new aiNode;
+	//sn->mRootNode->addChildren(1, &nd);
+	//nd->mNumMeshes = m.mMeshes.size();
+	//nd->mMeshes = new uint[nd->mNumMeshes];
+	//sn->mMeshes = new aiMesh * [sn->mNumMeshes];
 
-	for (uint i = 0; i < nd->mNumMeshes; ++i) { nd->mMeshes[i] = i; }
-	for (uint i = 0; i < sn->mNumMeshes; i++) {
-		auto& mes = m.mMeshes[i];
-		sn->mMeshes[i] = makeMesh(m, i, tran, type);
+	//for (uint i = 0; i < nd->mNumMeshes; ++i) { nd->mMeshes[i] = i; }
+	//for (uint i = 0; i < sn->mNumMeshes; i++) {
+	//	auto& mes = m.mMeshes[i];
+	//	sn->mMeshes[i] = makeMesh(m, i, tran, type);
 
-		name = mes.mName;
-		if (tran)name = Encoder::convert(gb2312, type, name);
-		sn->mMeshes[i]->mName = name;
+	//	name = mes.mName;
+	//	if (tran)name = Encoder::convert(gb2312, type, name);
+	//	sn->mMeshes[i]->mName = name;
 
-		if (mes.mTextures.size() > 0) {
-			sn->mMeshes[i]->mMaterialIndex = &mes.mTextures[0] - &m.mTextures[0];
-		}
-		else sn->mMeshes[i]->mMaterialIndex = 0;
-	}
+	//	if (mes.mTextures.size() > 0) {
+	//		sn->mMeshes[i]->mMaterialIndex = &mes.mTextures[0] - &m.mTextures[0];
+	//	}
+	//	else sn->mMeshes[i]->mMaterialIndex = 0;
+	//}
 
-	sn->mNumMaterials = m.mTextures.size();
-	sn->mMaterials = new aiMaterial * [sn->mNumMaterials];
-	for (unsigned int i = 0; i < sn->mNumMaterials; i++) {
-		sn->mMaterials[i] = makeMaterial(m, i, tran, type);
-	}
+	//sn->mNumMaterials = m.mTextures.size();
+	//sn->mMaterials = new aiMaterial * [sn->mNumMaterials];
+	//for (unsigned int i = 0; i < sn->mNumMaterials; i++) {
+	//	sn->mMaterials[i] = makeMaterial(m, i, tran, type);
+	//}
 
-	if (m.hasBone()) {
-		std::unique_ptr<aiNode* []> ppNode(new aiNode * [m.mNumBones]);
-		for (int i = 0; i < m.mNumBones; i++) {
-			ppNode[i] = new aiNode(m.mSkeleton[i].mName);
-			ppNode[i]->mTransformation = *(aiMatrix4x4*)&(m.mSkeleton[i].mTransform);
-		}
-		for (int i = 0; i < m.mNumBones; i++) {
-			const Joint& bone = m.mSkeleton[i];
-			if (bone.mParentId < 0) sn->mRootNode->addChildren(1, ppNode.get() + i);
-			else ppNode[bone.mParentId]->addChildren(1, ppNode.get() + i);
-		}
-	}
+	///*if (m.hasBone()) {
+	//	std::unique_ptr<aiNode* []> ppNode(new aiNode * [m.mNumBones]);
+	//	for (int i = 0; i < m.mNumBones; i++) {
+	//		ppNode[i] = new aiNode(m.mSkeleton[i].mName);
+	//		ppNode[i]->mTransformation = *(aiMatrix4x4*)&(m.mSkeleton[i].mTransform);
+	//	}
+	//	for (int i = 0; i < m.mNumBones; i++) {
+	//		const Joint& bone = m.mSkeleton[i];
+	//		if (bone.mParentId < 0) sn->mRootNode->addChildren(1, ppNode.get() + i);
+	//		else ppNode[bone.mParentId]->addChildren(1, ppNode.get() + i);
+	//	}
+	//}*/
 
-	Assimp::Exporter exp;
-	bool ret = true;
-	if (exp.Export(sn, filePath.substr(filePath.find_last_of('.') + 1), filePath, mask)) {
-		debug(exp.GetErrorString());
-		ret = false;
-	}
-	delete sn;
-	return ret;
+	//Assimp::Exporter exp;
+	//bool ret = true;
+	//if (exp.Export(sn, filePath.substr(filePath.find_last_of('.') + 1), filePath, mask)) {
+	//	debug(exp.GetErrorString());
+	//	ret = false;
+	//}
+	//delete sn;
+	//return ret;
+	return{};
 }
 
 Importer::~Importer() {

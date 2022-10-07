@@ -1,10 +1,9 @@
 #pragma once
-#include"core/base/basis.h"
-#include<unordered_set>
+#include"core/core.h"
 #include"../component/component.h"
 #include"../component/animation_comp.h"
 #include"../component/mesh_comp.h"
-#include"resource/json_helper.h"
+
 
 #define INVAILID_ID
 class GObject {
@@ -29,30 +28,31 @@ public:
 		}
 	}
 
-	void initialize(const string& object_path)
-	{
-		mFilePath = object_path;
-		Json obj = JsonHelper::load(object_path);
-
-		mId = obj["Id"].int_value();
-		mName = obj["Name"].string_value();
-		mDefinitionUrl = obj["DefinitionUrl"].string_value();
-
-		Json::array comps = obj["Components"].array_items();
-
-		for (auto& comp : comps)
-		{
-			addComponent(ComponentHelper::get().initComponent(comp));
-		}
-	}
-
 	virtual void serial(Archive& ar)
 	{
 		ar << mId << mName << mFilePath << mDefinitionUrl;
 
-		for (auto& comp : mComponents)
+		int comp_size = mComponents.size();
+		ar << comp_size;
+		if (ar.isLoading())
 		{
-			//comp->;
+			for (int i = 0; i < comp_size; ++i)
+			{
+				string tp;
+				ar << tp;
+				Component* comp = ComponentHelper::get().newComponent(tp);
+				comp->serial(ar);
+				addComponent(comp);
+			}
+		}
+		else
+		{
+			for (auto& comp : mComponents)
+			{
+				string tp = comp->type();
+				ar << tp;
+				comp->serial(ar);
+			}
 		}
 	}
 

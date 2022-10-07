@@ -1,18 +1,23 @@
 #pragma once
 #include"math/math_include.h"
-#include"meta/serializer.h"
 #include"log/debuger.h"
 #include"log/exception.h"
 #include"base/singleton.h"
 #include"meta/json.h"
-#include"meta/serializer.h"
-#include"math/math_serialize.h"
+#include"data_structure/data_structure.h"
+#include"base/encoder.h"
 #include<fstream>
+#include<unordered_set>
 
 using Transform = gm::SQT;
+using namespace gm;
 using namespace std;
+
 template<class key, class value>
 using umap = std::unordered_map<key, value>;
+
+template<class T>
+using uset = std::unordered_set<T>;
 
 #define Invalid_ID (uid{0})
 //uid==0 means invalid id

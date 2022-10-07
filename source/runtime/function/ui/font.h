@@ -1,7 +1,7 @@
 #pragma once
 #include"../render/shader.h"
 #include"../event/events.h"
-#include"../base/encoder.h"
+#include"core/core.h"
 #include FT_FREETYPE_H
 
 #define drawString font.pushString

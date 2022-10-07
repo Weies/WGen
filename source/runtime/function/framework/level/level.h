@@ -4,6 +4,8 @@
 
 class Level {
 public:
+
+
 	virtual ~Level() {
 		for (auto& p : mGObjects) {
 			p.second->~GObject();
@@ -11,21 +13,25 @@ public:
 		mGObjects.clear();
 	}
 
-	void initialize(const string& level_config_path)
+	void serial(Archive& ar)
 	{
-		Json level = JsonHelper::load(level_config_path);
-		Json::array objects = level["objects"].array_items();
-
-		for (auto& obj : objects)
+		size_t size = mGObjects.size();
+		ar << mName << mPath << size;
+		if (ar.isLoading())
 		{
-			string obj_path = obj.string_value();
-			GObject* obj = new GObject;
-			obj->initialize(obj_path);
-			
-			addGObject(obj);
+			for (int i = 0; i < size; ++i)
+			{
+				addGObject(new GObject);
+			}
+		}
+
+		for (auto& p : mGObjects)
+		{
+			p.second->serial(ar);
 		}
 
 	}
+
 	void addGObject(GObject* go)
 	{
 		mGObjects.insert({ mNextGOId,go });
@@ -51,6 +57,8 @@ public:
 
 	}
 
-	uint mNextGOId{ 1 };
-	unordered_map<uint, GObject*> mGObjects;
+	string							mName;
+	string							mPath;
+	uint							mNextGOId{ 1 };
+	unordered_map<uint, GObject*>	mGObjects;
 };

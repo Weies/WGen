@@ -4,30 +4,8 @@
 #include "../base/image.h"
 #include "stbi/stb_image.h"
 #include "stbi/stb_image_resize.h"
+#include "resource/res_type.h"
 
-enum TextureType {
-	texture_none = 0,
-	texture_diffuse = 1,
-	texture_specular = 2,
-	texture_ambient = 3,
-	texture_emmisive = 4,
-	texture_height = 5,
-	texture_normal = 6,
-	texture_shiness = 7,
-	texture_opacity = 8,
-	texture_displaces = 9,
-	texture_lightmap = 10,
-	texture_reflect = 11,
-	texture_base_color = 12,
-	texture_normal_camera = 13,
-	texture_emission_color = 14,
-	texture_metalness = 15,
-	texture_diffuse_roughness = 16,
-	texture_abient_occlusion = 17,
-	texture_unknown = 18,
-	texture_cubemap = 10,
-	texture_buffer = 19,
-};
 
 class Texture {
 public:

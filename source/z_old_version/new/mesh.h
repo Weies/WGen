@@ -174,6 +174,7 @@ protected:
 
 };
 
+
 inline Archive& operator<<(Archive& ar, MeshPatch& v)
 {
 	ar << v.mName << v.mTransform << v.mVertices << v.mIndices << v.mTextures;
@@ -351,6 +352,8 @@ protected:
 		return ret;
 	}
 };
+
+
 
 inline Archive& operator<<(Archive& ar, Mesh& m)
 {

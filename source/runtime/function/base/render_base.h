@@ -16,8 +16,7 @@ enum class RenderStrategy {
 
 class RenderMesh {
 public:
-	uid						mGUID;
-	uid						mInstanceID;
+
 	SkeletonBindingHandle	mSBH;
 	VertexBufferHandle		mVBH;
 	IndexBufferHandle		mIBH;
@@ -26,6 +25,8 @@ public:
 
 class RenderModel {
 public:
+	uid						mGUID;
+	uid						mInstanceID;
 	RenderStrategy desired{ RenderStrategy::Undefined };
 	mat4 mModelTransform;
 	vector<RenderMesh> mMeshes;
@@ -36,7 +37,7 @@ public:
 class VAOBuffer {
 public:
 	VAOBuffer() {
-		glGenVertexArrays(1 , &mId);
+		glGenVertexArrays(1, &mId);
 		bind();
 	}
 	void bind()
@@ -49,33 +50,33 @@ public:
 class VBOBuffer {
 public:
 	VBOBuffer() {
-		glGenBuffers(1 , &mId);
+		glGenBuffers(1, &mId);
 		bind();
 	}
 	void bind()
 	{
-		glBindBuffer(GL_ARRAY_BUFFER , mId);
+		glBindBuffer(GL_ARRAY_BUFFER, mId);
 	}
-	void setData(unsigned int bytes , const void* data , GLenum usage = GL_STATIC_DRAW)
+	void setData(unsigned int bytes, const void* data, GLenum usage = GL_STATIC_DRAW)
 	{
 		bind();
-		glBufferData(GL_ARRAY_BUFFER , bytes , data , usage);
+		glBufferData(GL_ARRAY_BUFFER, bytes, data, usage);
 	}
-	void setSubData(unsigned int bytes , unsigned int offset , const void* data)
+	void setSubData(unsigned int bytes, unsigned int offset, const void* data)
 	{
 		bind();
-		glBufferSubData(GL_ARRAY_BUFFER , offset , bytes , data);
+		glBufferSubData(GL_ARRAY_BUFFER, offset, bytes, data);
 	}
-	void setAttribPointer(uint index = 0 , int components = 3 , GLsizei stride_bytes = 12 , const void* offset_bytes = (void*)12 , GLenum data_type = GL_FLOAT , GLboolean normalize = GL_FALSE)
+	void setAttribPointer(uint index = 0, int components = 3, GLsizei stride_bytes = 12, const void* offset_bytes = (void*)12, GLenum data_type = GL_FLOAT, GLboolean normalize = GL_FALSE)
 	{
 		bind();
-		glVertexAttribPointer(index , components , data_type , normalize , stride_bytes , offset_bytes);
+		glVertexAttribPointer(index, components, data_type, normalize, stride_bytes, offset_bytes);
 		glEnableVertexAttribArray(index);
 	}
-	void setAttribPointer(uint index = 0 , int components = 3 , GLsizei stride_bytes = 12 , int offset_bytes = 12 , GLenum data_type = GL_FLOAT , GLboolean normalize = GL_FALSE)
+	void setAttribPointer(uint index = 0, int components = 3, GLsizei stride_bytes = 12, int offset_bytes = 12, GLenum data_type = GL_FLOAT, GLboolean normalize = GL_FALSE)
 	{
 		bind();
-		glVertexAttribPointer(index , components , data_type , normalize , stride_bytes , (void*)offset_bytes);
+		glVertexAttribPointer(index, components, data_type, normalize, stride_bytes, (void*)offset_bytes);
 		glEnableVertexAttribArray(index);
 	}
 	uint mId;
@@ -84,17 +85,17 @@ public:
 class IBOBuffer {
 public:
 	IBOBuffer() {
-		glGenBuffers(1 , &mId);
+		glGenBuffers(1, &mId);
 		bind();
 	}
 	void bind()
 	{
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER , mId);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mId);
 	}
-	void setData(unsigned int len , const void* data , GLenum usage = GL_STATIC_DRAW)
+	void setData(unsigned int len, const void* data, GLenum usage = GL_STATIC_DRAW)
 	{
 		bind();
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER , len , data , usage);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, len, data, usage);
 	}
 	uint mId;
 };
@@ -102,15 +103,15 @@ public:
 class RBOBuffer {
 public:
 	RBOBuffer() {
-		glGenRenderbuffers(1 , &mId);
+		glGenRenderbuffers(1, &mId);
 	}
 	void bind() {
-		glBindRenderbuffer(GL_RENDERBUFFER , mId);
+		glBindRenderbuffer(GL_RENDERBUFFER, mId);
 	}
 
-	void setData(int w , int h) {
-		glBindRenderbuffer(GL_RENDERBUFFER , mId);
-		glRenderbufferStorage(GL_RENDERBUFFER , GL_DEPTH24_STENCIL8 , w , h);
+	void setData(int w, int h) {
+		glBindRenderbuffer(GL_RENDERBUFFER, mId);
+		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, w, h);
 	}
 	uint mId;
 };

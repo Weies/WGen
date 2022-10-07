@@ -1,8 +1,15 @@
 #pragma once
 #include"../level/level.h"
+#include"resource/res_type/common/world.h"
 
 class WorldManager :public Singleton<WorldManager> {
 public:
+
+	string mPendingLevelURL;
+	vector<Level*> mLevels;
+	Level* mCurLevel{};
+
+
 	void tick(float delta_time) {
 		loadPendingLevel();
 
@@ -11,7 +18,7 @@ public:
 		}
 	}
 
-	const unordered_map<uint, GObject*>&  getAllObjects()
+	const unordered_map<uint, GObject*>& getAllObjects()
 	{
 		return mCurLevel->mGObjects;
 	}
@@ -34,21 +41,42 @@ public:
 	}
 
 	//º”‘ÿWorld
-	void initialize(const string& world_config_path)
+	void loadWorld(const string& world_path/*asset/default_world.world*/)
 	{
-		Json world = JsonHelper::load(world_config_path);
+		WorldRes res;
+		Archive ar(new LinkerLoad);
+		ar.load(world_path);
+		ar << res;
 
-		string default_level = world["default_level"].string_value();
+		ar.load(res.mDefaultLevelUrl);
 
 		mCurLevel = new Level;
-		mCurLevel->initialize(default_level);
+		mCurLevel->serial(ar);
 		mLevels.push_back(mCurLevel);
+	}
+
+	void saveWorld(const string& world_path)
+	{
+		WorldRes res;
+
+		res.mPath = world_path;
+		res.mDefaultLevelUrl = mCurLevel->mPath;
+
+		Archive ar(new LinkerSave);
+
+		for (auto& p : mLevels)
+		{
+			res.mLevelUrls.push_back(p->mPath);
+			p->serial(ar);
+			ar.save(p->mPath);
+			ar.clear();
+		}
+
+		ar << res;
+		ar.save(world_path);
 	}
 
 	void loadPendingLevel() {
 		if (mPendingLevelURL.empty())return;
 	}
-	string mPendingLevelURL;
-	vector<Level*> mLevels;
-	Level* mCurLevel{};
 };

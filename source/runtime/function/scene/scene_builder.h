@@ -1,6 +1,6 @@
 #pragma once
 #include"scene_buffer.h"
-#include"function/importer/Importer.h"
+#include"resource/importer/Importer.h"
 
 
 //SceneBuilder 一定会分配新内存，但是SceneManager可能不分配新内存

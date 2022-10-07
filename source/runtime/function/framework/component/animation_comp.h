@@ -7,11 +7,6 @@ public:
 
 	RegisterComponent(Animation);
 
-	virtual void finalize(const Json& j) override
-	{
-
-	}
-
 	Skeleton mSkeleton;
 	vector<Animation> mAnim;
 	uint mAnimIndex{ 0 };

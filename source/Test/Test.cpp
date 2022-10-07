@@ -1,7 +1,6 @@
 #include"Engine.h"
 #include"function/physics/collision_dectect.h"
-#include"function/importer/importer.h"
-#include"function/importer/mesh.h"
+#include"resource/importer/importer.h"
 
 
 
@@ -11,22 +10,32 @@ int main()
 {
 
 	Importer imp;
-	SkeletalMesh m;
+	MeshData m;
 	imp.Import(m, "asset/models/yuan/ying/ying.pmx");
+
+
 
 	LinkerLoad load;
 	LinkerSave save;
+
 	Archive ar(&save);
 
-	ar << m;
 
-	load.arr.swap(save.arr);
 
-	ar.mLinker = &load;
+	//WorldManager::get().l
 
-	SkeletalMesh mm;
+	//ar.load("asset/1.asset");
+	//ar << m;
 
-	ar << mm;
+	////ar.save("asset/1.asset");
+
+	//load.arr.swap(save.arr);
+
+	//ar.mLinker = &load;
+
+	//MeshData mm;
+
+	//ar << mm;
 
 
 

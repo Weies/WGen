@@ -1,7 +1,9 @@
 #pragma once
 #include"core/core.h"
+#include"function/base/image.h"
 #include"resource/resource_handle.h"
-#include"../base/image.h"
+#include"resource/res_type.h"
+
 class SceneMemory {
 public:
 	SceneMemory() :mSize(0), mData(0) {}

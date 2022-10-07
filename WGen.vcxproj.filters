@@ -66,25 +66,13 @@
     <ClCompile Include="source\Test\Test.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="source\z_old_version\new\render_mseh.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="source\z_old_version\new\triangleMesh.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="source\runtime\function\network\network.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="source\runtime\function\framework\component\mesh_comp.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="source\runtime\function\importer\Importer.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="source\runtime\function\importer\mesh.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="source\z_old_version\new\model_importer.cpp">
+    <ClCompile Include="source\runtime\resource\importer\Importer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -131,7 +119,7 @@
     <ClInclude Include="source\runtime\function\base\coordinate.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="source\runtime\function\base\encoder.h">
+    <ClInclude Include="source\runtime\core\base\encoder.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="source\runtime\function\animation\animation.h">
@@ -254,7 +242,7 @@
     <ClInclude Include="thirdparty\json11\json11.hpp">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="source\runtime\core\meta\serializer.h">
+    <ClInclude Include="source\runtime\resource\serializer\serializer.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="source\runtime\core\meta\json.h">
@@ -350,34 +338,43 @@
     <ClInclude Include="source\runtime\function\model\model_include.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="source\z_old_version\new\render_mesh.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="source\z_old_version\new\triangleMesh.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="source\runtime\function\network\network.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="source\runtime\Engine.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="source\runtime\resource\json_helper.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="source\runtime\function\importer\Importer.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="source\runtime\function\importer\mesh.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="source\z_old_version\new\model_importer.h">
+    <ClInclude Include="source\runtime\resource\importer\Importer.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="source\runtime\platform\file_system\file.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="source\runtime\core\math\math_serialize.h">
+    <ClInclude Include="source\runtime\resource\serializer\math_serializer.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="source\runtime\resource\res_type\data\asset_data.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="source\runtime\resource\res_type\components\component_data.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="source\runtime\resource\serializer.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="source\runtime\resource\importer.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="source\runtime\resource\res_type.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="source\runtime\resource\res_type\data\texture_data.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="source\runtime\resource\asset_manager.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="source\z_old_version\标头.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -386,7 +383,6 @@
     <None Include="source\shader\phong_shadow.shader" />
     <None Include="source\shader\pbrr.shader" />
     <None Include="source\shader\render.shader" />
-    <None Include="config\engine.config.json" />
     <None Include="asset\world.json" />
     <None Include="asset\level.json" />
     <None Include="asset\player.json" />

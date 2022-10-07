@@ -2,16 +2,19 @@
 #include"component.h"
 #include"function/base/render_base.h"
 #include"animation_comp.h"
-
+#include"resource/res_type/components/mesh.h"
 
 class MeshComponent :public Component {
 public:
-	vector<MeshDesc>		mRawMeshes;
-	string					mMeshFile;
 
+	MeshCompRes				mMesh;
 	RegisterComponent(Mesh);
 
-	virtual void finalize(const Json& j) override;
+	virtual void serial(Archive& ar)
+	{
+		Component::serial(ar);
+		ar << mMesh;
+	}
 
 	MeshComponent() {}
 

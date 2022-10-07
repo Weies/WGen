@@ -1,14 +1,11 @@
 #pragma once
 
-#include"core/core.h"
+#include"component_data.h"
+#include"resource/serializer.h"
 
 
-//--------------------------------------------------
-// Resource is editable and serializable
-//--------------------------------------------------
 
-
-class SubMeshRes
+class SubMeshRes :public CompRes
 {
 public:
 	string		mName;
@@ -16,29 +13,25 @@ public:
 	uint		mResIndex;
 };
 
-class MeshCompRes
+class MeshCompRes :public CompRes
 {
 public:
 
-	string		mName;
 	string		mOriginalFilePath;
 	Transform	mTransform;
 
 	vector<SubMeshRes> mMeshes;
 
-
-
-
 };
 
 inline Archive& operator<<(Archive& ar, SubMeshRes& v)
 {
-	ar << v.mName << v.mResIndex << v.mResIndex;
+	ar << v.mType << v.mResIndex << v.mResIndex;
 	return ar;
 }
 
 inline Archive& operator<<(Archive& ar, MeshCompRes& v)
 {
-	ar << v.mName << v.mOriginalFilePath << v.mTransform << v.mMeshes;
+	ar << v.mType << v.mOriginalFilePath << v.mTransform << v.mMeshes;
 	return ar;
 }

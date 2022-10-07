@@ -2,7 +2,6 @@
 #include"matrix_operation.h"
 #include"mat_generate.h"
 #include"rand.h"
-#include"math_serialize.h"
 
 namespace gm {
 

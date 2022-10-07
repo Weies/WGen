@@ -25,4 +25,9 @@ public:
 		text = string(beg, end);
 		return true;
 	}
+
+	static string getDirectory(const string& path)
+	{
+		return path.substr(0, path.rfind('\\'));
+	}
 };
