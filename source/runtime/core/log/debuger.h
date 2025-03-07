@@ -147,11 +147,12 @@ public:
 };
 
 #define debug Singleton<Debuger>::get()
+#define de Singleton<Debuger>::get()
 
-inline Debuger& __cdecl endl(Debuger& de) {
-	de.o << '\n';
-	if (de.qFlush)de.flush();
-	return de;
+inline Debuger& __cdecl endl(Debuger& d) {
+	d.o << '\n';
+	if (d.qFlush)d.flush();
+	return d;
 }
 
 //#define GLCall(x)		clearError();x;ASSERT(glCheckError_(#x,__FILE__,__LINE__));

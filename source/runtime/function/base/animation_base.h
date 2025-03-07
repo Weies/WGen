@@ -36,12 +36,20 @@ public:
 
 struct Joint {
 	string mName;
+
+	qua preRotation;
+
+	// world transform
+	SQT mTransform;
+	// local transform
+	SQT mLocalTransform;
+
+	int mParentId = -1;
+	bool mIsGood = true;
+
+	// internal data
 	SQT mCurTransform;
 	SQT mOffsetTransform;
-	SQT mTransform;
-	SQT mLocalTransform;
-	int mParentId;
-	bool mIsGood = true;
 };
 
 struct Skeleton {
@@ -70,6 +78,44 @@ public:
 	}
 	const Joint& operator[](int i)const {
 		return mJoints[i];
+	}
+
+	void updateWorld()
+	{
+		for (auto& joint : mJoints)
+		{
+			if (joint.mParentId != -1)
+			{
+				SQT local = joint.mLocalTransform;
+				local.q = joint.preRotation * local.q;
+				joint.mTransform = mJoints[joint.mParentId].mTransform * local;
+			}
+			else
+			{
+				SQT local = joint.mLocalTransform;
+				local.q = joint.preRotation * local.q;
+				joint.mTransform = local;
+			}
+		}
+	}
+
+	void updateLocal()
+	{
+		for (auto& joint : mJoints)
+		{
+			if (joint.mParentId != -1)
+			{
+				joint.mLocalTransform = mJoints[joint.mParentId].mTransform.inv() * joint.mTransform;
+				joint.mLocalTransform.q = joint.preRotation.inv() * joint.mLocalTransform.q;
+			}
+			else
+				joint.mLocalTransform = joint.mTransform;
+		}
+	}
+
+	operator vector<Joint>& ()
+	{
+		return mJoints;
 	}
 
 	vector<Joint>	mJoints;

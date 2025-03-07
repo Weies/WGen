@@ -7,8 +7,8 @@
 //int main() {
 //
 //	PhongRender phong;
-//	/*MeshObject m;
-//	m.readDRO("E:/Learnnotes/CG/WGen/models/objs/girl/Hgirl.dro");*/
+//	MeshObject m;
+//	m.readDRO("E:/Learnnotes/CG/WGen/models/objs/girl/Hgirl.dro");
 //	Render3D ren;
 //	ca.moveto(vec3(3.0, 0.0, 0.8));
 //	phong.addLights();

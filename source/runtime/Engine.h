@@ -30,9 +30,9 @@ public:
 
 		ar << cfg;
 
-		WorldManager::get().loadWorld(cfg.mDefaultWorld);
+		//WorldManager::get().loadWorld(cfg.mDefaultWorld);
 
-		WorldManager::get().mPendingLevelURL = "asset/level.json";
+		//WorldManager::get().mPendingLevelURL = "asset/level.json";
 
 		return true;
 	}

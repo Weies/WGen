@@ -105,13 +105,13 @@ public:
 	static void fillRect(vec2 p1, vec2 p2)
 	{
 		glStart(GL_TRIANGLES);
-		glPoint(p1);
 		glPoint(p2);
 		glPixel(p1.x, p2.y);
+		glPoint(p1);
 
 		glPoint(p1);
-		glPoint(p2);
 		glPixel(p2.x, p1.y);
+		glPoint(p2);
 		glOver();
 	}
 

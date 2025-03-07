@@ -92,7 +92,7 @@ public:
 	string mFilePath;
 	Archive(Linker* link) :mLinker(link) {}
 	Archive(Linker* link, const string& file_path) :mLinker(link), mFilePath(file_path) {}
-	virtual ~Archive() { delete mLinker; }
+	virtual ~Archive() {/* delete mLinker;*/ }
 
 	Archive& operator<<(int& val) { mLinker->serial(val);	return*this; };
 	Archive& operator<<(float& val) { mLinker->serial(val);	return*this; };

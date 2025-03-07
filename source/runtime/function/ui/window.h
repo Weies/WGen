@@ -47,8 +47,8 @@ public:
 
 		glEnable(GL_DEPTH_TEST);
 		glDepthFunc(GL_LEQUAL);
-		glEnable(GL_CULL_FACE);
-		glCullFace(GL_BACK);
+		//glEnable(GL_CULL_FACE);
+		//glCullFace(GL_BACK);
 
 		glfwSwapInterval(0);
 		glViewport(0, 0, w, h);
@@ -137,7 +137,10 @@ public:
 			fun();
 			repaint();
 
-			if (_render)_render->renderList(transform);
+			if (_render)
+			{
+				_render->renderList(transform);
+			}
 			++tick;
 			if (lastTime + 1000 < gameTime) {
 				double fps = tick * 1000.0 / (gameTime - lastTime);
@@ -156,6 +159,8 @@ public:
 			debug.flush();
 			glfwSwapBuffers(win);
 			glfwPollEvents();
+
+			this_thread::sleep_for((1000ms / target_fps - 1ms * frameTime));
 		};
 		destroy();
 	}
@@ -261,6 +266,7 @@ public:
 		}
 		return false;
 	}
+	int target_fps = 60;
 	string fps_str;
 	Font* ft = 0; vec2 Pos;
 	Render2D* _render = 0; mat3 transform;

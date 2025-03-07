@@ -9,6 +9,6 @@ int ui::BaseWidget::curPrior = 1.0;
 StringConventer sc;
 double globals::gameTime;
 double globals::clockTime;
-double globals::frameps = 60.0f;//¼ÇÂ¼Æ½¾ùµÄÖ¡ÂÊ
+double globals::frameps = 60.0f;//è®°å½•å¹³å‡çš„å¸§ç‡
 double globals::frameTime = 10;
 bool Window::first_win = false;

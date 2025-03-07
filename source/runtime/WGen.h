@@ -7,7 +7,7 @@
 
 #include"function/ui/ui_include.h"
 
-Window main_win(800, 600, "Weies's Drawing", true);
+Window main_win(1600, 1200, "Weies's Drawing", true);
 
 class __initer {
 public:
